@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}Lista de Cotizaciones{% endblock %}
+
+{% block content %}
+<h1>Lista de Cotizaciones</h1>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Cliente</th>
+            <th>Estado</th>
+            <th>Total</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for cotizacion in cotizaciones %}
+        <tr>
+            <td>{{ cotizacion.id }}</td>
+            <td>{{ cotizacion.cliente.nombre }}</td>
+            <td>{{ cotizacion.estado }}</td>
+            <td>{{ cotizacion.total }}</td>
+            <td>
+                <a href="{% url 'cotizacion_detalle' cotizacion.id %}" class="btn btn-primary btn-sm">Ver</a>
+                <a href="{% url 'cotizacion_editar' cotizacion.id %}" class="btn btn-warning btn-sm">Editar</a>
+                <a href="{% url 'cotizacion_eliminar' cotizacion.id %}" class="btn btn-danger btn-sm">Eliminar</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<a href="{% url 'cotizacion_crear' %}" class="btn btn-success">Nueva Cotización</a>
+{% endblock %}

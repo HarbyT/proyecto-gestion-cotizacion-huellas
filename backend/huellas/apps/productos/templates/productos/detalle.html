@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}Detalle de Producto{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Detalle del Producto</h1>
+
+<p><strong>Nombre:</strong> {{ producto.nombre }}</p>
+<p><strong>Categoría:</strong> {{ producto.categoria }}</p>
+<p><strong>Tipo de Encuadernación:</strong> {{ producto.tipo_encuadernacion }}</p>
+<p><strong>Imagen:</strong> <img src="{{ producto.imagen }}" alt="{{ producto.nombre }}" style="max-width: 300px;"></p>
+<p><strong>Plantilla:</strong> <a href="{{ producto.plantilla }}">Descargar</a></p>
+
+<a href="{% url 'productos' %}" class="btn btn-secondary">Volver</a>
+{% endblock %}

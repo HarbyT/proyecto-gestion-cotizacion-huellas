@@ -11,9 +11,12 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import os 
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+# BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # Quick-start development settings - unsuitable for production
@@ -39,10 +42,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'apps.clientes',
     'apps.productos',
-    'apps.materiales',
-    'apps.maquinas',
+    #'apps.materiales',
+    #'apps.maquinas',
     'apps.cotizaciones',
-    'apps.reportes',
+    #'apps.reportes',
     'apps.notificaciones',
 ]
 
@@ -61,7 +64,7 @@ ROOT_URLCONF = 'huellas.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -73,6 +76,7 @@ TEMPLATES = [
         },
     },
 ]
+print(os.path.join(BASE_DIR, 'templates'))
 
 WSGI_APPLICATION = 'huellas.wsgi.application'
 
@@ -82,8 +86,15 @@ WSGI_APPLICATION = 'huellas.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'huellas_db',  # Nombre de la base de datos que creaste
+        'USER': 'root',  # Usuario predeterminado de MySQL en XAMPP
+        'PASSWORD': 'admin123',  # XAMPP no establece una contraseña por defecto para root
+        'HOST': '127.0.0.1',  # Dirección del servidor MySQL
+        'PORT': '3306',# Puerto en el que corre MySQL
+        'OPTIONS': {
+            'ssl': {'ssl_disabled': True},  # Desactiva SSL
+        },  
     }
 }
 
@@ -122,7 +133,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

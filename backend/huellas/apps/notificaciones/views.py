@@ -1,3 +1,8 @@
-from django.shortcuts import render
+from django.views.generic import ListView
+from .models import TareaProduccion
 
-# Create your views here.
+class TareaProduccionListView(ListView):
+    model = TareaProduccion
+    template_name = 'tareas/lista.html'
+    context_object_name = 'tareas'
+
