@@ -11,6 +11,7 @@ class Cotizacion(models.Model):
     iva = models.DecimalField(max_digits=5, decimal_places=2, default=19.00)  # IVA predeterminado al 19%
     margen_ganancia = models.DecimalField(max_digits=5, decimal_places=2, default=0.00)
     observaciones = models.TextField(null=True, blank=True)
+    sub_total = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
 
     def calcular_total(self):
         subtotal = sum(detalle.sub_total for detalle in self.detalles.all())
@@ -27,13 +28,7 @@ class DetalleCotizacion(models.Model):
     producto = models.ForeignKey('productos.Producto', on_delete=models.CASCADE)
     cantidad = models.PositiveIntegerField()
     precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)
-    sub_total = models.DecimalField(max_digits=10, decimal_places=2, blank=True)
 
-    def save(self, *args, **kwargs):
-        # Calcula el subtotal automáticamente
-        self.sub_total = self.cantidad * self.precio_unitario
-        super().save(*args, **kwargs)
-    
-    def __str__(self):
-        return f'{self.cantidad} x {self.producto.nombre} en Cotización #{self.cotizacion.id}'
-
+    @property
+    def sub_total(self):
+        return self.cantidad * self.precio_unitario

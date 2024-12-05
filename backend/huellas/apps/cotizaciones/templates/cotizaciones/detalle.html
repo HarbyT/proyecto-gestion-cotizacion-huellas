@@ -1,56 +1,37 @@
 {% extends 'base.html' %}
 
-{% block title %}Detalle de Cotización{% endblock %}
+{% block title %}Detalle de la Cotización{% endblock %}
 
 {% block content %}
-<h1>Detalle de Cotización #{{ cotizacion.id }}</h1>
-
-<h2>Cliente</h2>
-<p><strong>Nombre:</strong> {{ cotizacion.cliente.nombre }}</p>
+<h2>Detalle de la Cotización</h2>
+<p><strong>Cliente:</strong> {{ cotizacion.cliente.nombre }}</p>
 <p><strong>Estado:</strong> {{ cotizacion.estado }}</p>
-<p><strong>Total:</strong> ${{ cotizacion.total }}</p>
+<p><strong>Total:</strong> {{ cotizacion.total }}</p>
+<p><strong>Observaciones:</strong> {{ cotizacion.observaciones }}</p>
 
-<h2>Detalles</h2>
-<table class="table table-striped">
+<h3>Detalles</h3>
+<table class="table">
     <thead>
         <tr>
             <th>Producto</th>
             <th>Cantidad</th>
             <th>Precio Unitario</th>
-            <th>Subtotal</th>
+            <th>Sub Total</th>
         </tr>
     </thead>
     <tbody>
-        {% for detalle in detalles %}
+        {% for detalle in cotizacion.detalles.all %}
         <tr>
             <td>{{ detalle.producto.nombre }}</td>
             <td>{{ detalle.cantidad }}</td>
-            <td>${{ detalle.precio_unitario }}</td>
-            <td>${{ detalle.sub_total }}</td>
+            <td>{{ detalle.precio_unitario }}</td>
+            <td>{{ detalle.sub_total }}</td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
 
-<h2>Tareas de Producción</h2>
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Área</th>
-            <th>Descripción</th>
-            <th>Completado</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for tarea in tareas %}
-        <tr>
-            <td>{{ tarea.area }}</td>
-            <td>{{ tarea.descripcion }}</td>
-            <td>{{ tarea.completado|yesno:"Sí,No" }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-
-<a href="{% url 'cotizaciones' %}" class="btn btn-secondary">Volver</a>
+<a href="{% url 'cotizacion_update' cotizacion.id %}" class="btn btn-warning">Editar</a>
+<a href="{% url 'cotizacion_delete' cotizacion.id %}" class="btn btn-danger">Eliminar</a>
+<a href="{% url 'cotizacion_list' %}" class="btn btn-secondary">Volver a la lista</a>
 {% endblock %}

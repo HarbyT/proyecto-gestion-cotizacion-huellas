@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}Detalle del Cliente{% endblock %}
+
+{% block content %}
+<h2>Detalle del Cliente</h2>
+<p><strong>Nombre:</strong> {{ cliente.nombre }}</p>
+<p><strong>Correo:</strong> {{ cliente.correo }}</p>
+{% if cliente.archivo %}
+    <p><strong>Archivo:</strong> <a href="{{ cliente.archivo.url }}">{{ cliente.archivo.name }}</a></p>
+{% else %}
+    <p><strong>Archivo:</strong> No hay archivo adjunto</p>
+{% endif %}
+<a href="{% url 'cliente_update' cliente.id %}" class="btn btn-warning">Editar</a>
+<a href="{% url 'cliente_delete' cliente.id %}" class="btn btn-danger">Eliminar</a>
+<a href="{% url 'cliente_list' %}" class="btn btn-secondary">Volver a la lista</a>
+{% endblock %}

@@ -11,5 +11,5 @@
 <p><strong>Imagen:</strong> <img src="{{ producto.imagen }}" alt="{{ producto.nombre }}" style="max-width: 300px;"></p>
 <p><strong>Plantilla:</strong> <a href="{{ producto.plantilla }}">Descargar</a></p>
 
-<a href="{% url 'productos' %}" class="btn btn-secondary">Volver</a>
+<a href="{% url 'producto_list' %}" class="btn btn-secondary">Volver</a>
 {% endblock %}
