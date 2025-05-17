@@ -17,10 +17,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import TemplateView
-
+from huellas import views  # importa la vista home
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', TemplateView.as_view(template_name='base.html'), name='home'),
+    path('', views.home, name='home'),
+    path('api/cuentas/', include('apps.cuentas.urls')),
+    path('api/cuentas/', include('django.contrib.auth.urls')),  # <-- Agrega esta línea
     path('api/clientes/', include('apps.clientes.urls')),
     path('api/productos/', include('apps.productos.urls')),
     #path('api/materiales/', include('apps.materiales.urls')),

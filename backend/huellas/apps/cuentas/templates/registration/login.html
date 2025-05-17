@@ -1,0 +1,20 @@
+<!-- filepath: c:\pasantiaHuellas\proyecto-gestion-cotizacion-huellas\backend\huellas\apps\cuentas\templates\registration\login.html -->
+{% extends "base.html" %}
+
+{% block title %}Iniciar sesión{% endblock %}
+
+{% block content %}
+<div class="container mt-5" style="max-width:400px;">
+    <h2>Iniciar sesión</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Entrar</button>
+    </form>
+    {% if form.errors %}
+        <div class="alert alert-danger mt-2">
+            Usuario o contraseña incorrectos.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

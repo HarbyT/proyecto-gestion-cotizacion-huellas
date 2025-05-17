@@ -23,6 +23,7 @@ class CotizacionListView(ListView):
 class CotizacionDetailView(DetailView):
     model = Cotizacion
     template_name = 'cotizaciones/detalle.html'
+    fields = fields = '__all__'
     context_object_name = 'cotizacion'
 
 class CotizacionUpdateView(UpdateView):

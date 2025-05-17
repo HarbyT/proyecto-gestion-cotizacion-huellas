@@ -1,0 +1,21 @@
+<!-- filepath: c:\pasantiaHuellas\proyecto-gestion-cotizacion-huellas\backend\huellas\apps\cuentas\templates\cuentas\perfil.html -->
+{% extends "base.html" %}
+
+{% block title %}Mi Perfil{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Mi Perfil</h2>
+    <ul class="list-group">
+        <li class="list-group-item"><strong>Usuario:</strong> {{ perfil.user.username }}</li>
+        <li class="list-group-item"><strong>Email:</strong> {{ perfil.user.email }}</li>
+        <li class="list-group-item"><strong>Teléfono:</strong> {{ perfil.telefono }}</li>
+        {% if perfil.foto %}
+            <li class="list-group-item">
+                <strong>Foto:</strong><br>
+                <img src="{{ perfil.foto.url }}" alt="Foto de perfil" width="150">
+            </li>
+        {% endif %}
+    </ul>
+</div>
+{% endblock %}

@@ -1,0 +1,440 @@
+<!-- filepath: c:\pasantiaHuellas\proyecto-gestion-cotizacion-huellas\backend\huellas\templates\home.html -->
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Huellas Litográficas | Publicidad y Litografía{% endblock %}
+
+
+{% block content %}
+
+<!-- Navbar interna SIEMPRE visible y sticky -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light mb-4 sticky-top shadow-sm">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">Menú</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarHome"
+            aria-controls="navbarHome" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarHome">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="#sobreHuellas">Sobre Huellas Litográficas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#servicios">Servicios</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#portafolio">Portafolio</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#contacto">Contacto</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- El resto de tu contenido principal -->
+<header class="py-5 bg-white position-relative header-hero">
+  <div class="container">
+    <div class="row align-items-center">
+      <!-- Texto de bienvenida -->
+      <div class="col-lg-7 col-12 mb-4 mb-lg-0">
+        <div class="divText p-4 rounded-4 shadow-sm" data-aos="fade-up" style="background:rgba(255,245,230,0.85);">
+          <h3 class="mb-3" style="font-weight:600; color:#b53600;">
+            <hr class="my-2" style="width:60px; border:2px solid #b53600; opacity:0.7;">
+            Hola, <span style="color:#ff9800;">Bienvenido a Huellas Litográficas</span>
+          </h3>
+          <h1 class="display-4 fw-bold mb-3" style="color:#222;">
+            Empresa de Publicidad, Litografía y diseño.
+          </h1>
+          <p class="lead mb-4" style="color:#444;">
+            Apasionados por materializar tus ideas.<br>
+            <span class="fw-semibold"><i class="bi bi-geo-alt-fill text-danger"></i> Ubicados en: Cr 69c #70a-18</span>
+          </p>
+          <!-- Redes sociales en el header -->
+          <div id="div-redes" class="mb-2 d-flex gap-3">
+            <a href="https://wa.me/573114831429" target="_blank" class="icono-red whatsapp" aria-label="WhatsApp">
+                <i class="bi bi-whatsapp"></i>
+            </a>
+            <a href="https://www.instagram.com/huellaslitograficas/" target="_blank" class="icono-red instagram" aria-label="Instagram">
+                <i class="bi bi-instagram"></i>
+            </a>
+            <a href="https://www.facebook.com/Huellaslitograficas1" target="_blank" class="icono-red facebook" aria-label="Facebook">
+                <i class="bi bi-facebook"></i>
+            </a>
+            <a href="https://www.linkedin.com/in/patricia-vargas-tovar-a107152b/" target="_blank" class="icono-red linkedin" aria-label="LinkedIn">
+                <i class="bi bi-linkedin"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+      <!-- Imagen del logo -->
+      <div class="col-lg-5 col-12 text-center">
+        <div class="bg-white rounded-4 shadow p-3 d-inline-block" style="max-width:370px;">
+          <img id="svg1" alt="Logo Huellas" src="{% static 'images/LogoHuellasLupa.png' %}" 
+               class="img-fluid" style="max-width: 320px; width: 80%;">
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+
+<!-- Resumen web Mio-->
+<section class="seccionMi" id="sobreHuellas">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card shadow-lg border-0 rounded-4 p-4" style="background: #fffbe9;">
+                    <div class="text-center mb-4">
+                        <h1 class="fw-bold mb-2" style="color:#b53600;">¿Quiénes somos?</h1>
+                        <h3 class="mb-0 text-secondary">Nuestra Empresa</h3>
+                    </div>
+                    <div id="slider-huellas" class="carousel slide" data-bs-ride="carousel" data-bs-interval="15000">
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <p>
+                                    Huellas Litográficas S.A.S. es un proyecto, un horizonte y un sueño con más de 12 años de experiencia en el mercado de las artes gráficas y servicios publicitarios. Por ello, nos consideramos en capacidad de llevar y garantizar a su imagen corporativa excelentes parámetros de calidad donde los procesos de producción estarán a la altura de sus clientes.
+                                </p>
+                            </div>
+                            <div class="carousel-item">
+                                <p>
+                                    Nuestra misión y objetivos giran en establecer una conexión entre nuestros servicios, sus necesidades y los medios para construir óptimos productos. De esta manera, Huellas Litográficas S.A.S espera garantizarle una óptima impresión, cumplimiento en tiempos de entrega y una asesoría que les permitirá contar en el momento necesario con sus requerimientos solicitados.
+                                </p>
+                            </div>
+                            <div class="carousel-item">
+                                <p>
+                                    La prioridad de Huellas Litográficas es cultivar los valores de Calidad, Confianza, Responsabilidad, Compromiso y Acompañamiento en la elaboración y ejecución de los productos que consoliden la imagen, marca, producto o servicio de su empresa. Desde su creación, nos encargamos de que su imagen deje Huella, manteniendo y consolidando, al aportar la asesoria que resulta de una larga trayectoria de experiencia y siempre teniendo como base los objetivos que permitirán cumplir con sus propósitos comerciales.
+                                </p>
+                            </div>
+                            <div class="carousel-item">
+                                <p>
+                                    Nos caracterizamos por ser una empresa servicial, creativa y competitiva dispuesta siempre a compartir con nuestros clientes para lograr cumplir con las expectativas de quienes confían y ponen sus proyectos en las manos del equipo de Huellas Litográficas. Nuestro principal objetivo es consolidar nuestros aportes como empresa integral de servicios publicitarios.
+                                </p>
+                            </div>
+                            <div class="carousel-item">
+                                <p>
+                                    Nuestros compromisos y acciones están dirigidas a la prestación de los servicios publicitarios y de packing. Brindando asesorías y respaldos necesarios a nuestros clientes para generar productos de altos estándares de calidad. Recuerde que el diseño gráfico y la impresión son los pilares de nuestra empresa y queremos que sus impresiones dejen la Huella que usted quiere transmitir a sus clientes.
+                                </p>
+                            </div>
+                            <div class="carousel-item">
+                                <p>
+                                    Trabajamos por tu imagen de alto impacto:<br><br>
+                                    🎡 <strong>Diseñamos tu producto:</strong> Nos encanta trabajar del lado del cliente y que sus usuarios se conecten con tu marca.
+                                </p>
+                            </div>
+                            <div class="carousel-item">
+                                <p>
+                                    🏗 <strong>Imprimimos tus huellas:</strong> Imprimir es llevar a lo real tus ideas, y en las artes gráficas somos profesionales.
+                                </p>
+                            </div>
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#slider-huellas" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon"></span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#slider-huellas" data-bs-slide="next">
+                            <span class="carousel-control-next-icon"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section id="servicios" class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <h3 class="text-uppercase text-secondary mb-2" style="letter-spacing:1px;">Servicios</h3>
+            <h1 class="mb-3 fw-bold">¿Qué hacemos?</h1>
+            <p class="lead">
+                En Huellas Litográficas S.A.S. ofrecemos una amplia gama de servicios publicitarios y de litografía, incluyendo:
+            </p>
+        </div>
+        <div class="row g-4 justify-content-center">
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card h-100 shadow-sm border-0 servicio-card text-center">
+                    <div class="card-body">
+                        <i class="bi bi-brush display-4 text-warning mb-3"></i>
+                        <h5 class="card-title fw-bold">Diseño gráfico</h5>
+                        <p class="card-text">Creatividad y diseño profesional para tu marca y productos.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card h-100 shadow-sm border-0 servicio-card text-center">
+                    <div class="card-body">
+                        <i class="bi bi-box-seam display-4 text-success mb-3"></i>
+                        <h5 class="card-title fw-bold">Empaques</h5>
+                        <p class="card-text">Soluciones de empaque personalizadas y de alta calidad.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card h-100 shadow-sm border-0 servicio-card text-center">
+                    <div class="card-body">
+                        <i class="bi bi-image display-4 text-primary mb-3"></i>
+                        <h5 class="card-title fw-bold">Impresión digital</h5>
+                        <p class="card-text">Banners, pendones y gran formato con colores vibrantes.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card h-100 shadow-sm border-0 servicio-card text-center">
+                    <div class="card-body">
+                        <i class="bi bi-printer display-4 text-danger mb-3"></i>
+                        <h5 class="card-title fw-bold">Impresión off-set</h5>
+                        <p class="card-text">Tamaños 1/2, 1/4, 1/8 pliego y más, con calidad profesional.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card h-100 shadow-sm border-0 servicio-card text-center">
+                    <div class="card-body">
+                        <i class="bi bi-stars display-4 text-info mb-3"></i>
+                        <h5 class="card-title fw-bold">Material POP</h5>
+                        <p class="card-text">Publicidad en materiales promocionales para tu marca.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card h-100 shadow-sm border-0 servicio-card text-center">
+                    <div class="card-body">
+                        <i class="bi bi-easel2 display-4 text-secondary mb-3"></i>
+                        <h5 class="card-title fw-bold">Portapendones</h5>
+                        <p class="card-text">Soportes y exhibidores para tus impresiones y eventos.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="text-center mt-5">
+            <a href="{% static 'catalogo.pdf' %}" download class="boton-1 btn btn-lg d-inline-flex align-items-center gap-2">
+                Descargar Catálogo
+                <i class="bi bi-download"></i>
+            </a>
+        </div>
+    </div>
+</section>
+        
+    
+<!--fin seccion resumen web-->
+<!-- Sección de Portafolio -->
+<section class="seccion-portafolio" id="portafolio">
+    <br><br>
+    <div class="contenedor mb-5">
+        <div class="tit text-center" data-aos="fade-up">
+            <img id="svg1" alt="Logo Huellas" src="{% static 'images/Portafolio.png' %}" 
+             class="img-fluid mb-3" style="max-width: 480px; width: 70%;">
+            <h1 class="fw-bold" style="color:#b53600;">Portafolio</h1>
+            <h4 class="text-secondary mb-3">Soluciones gráficas para cada necesidad</h4>
+            <p class="lead" style="max-width:600px; margin:auto;">
+                Descubre algunos de los proyectos y productos que hemos desarrollado para nuestros clientes.<br>
+                Cada tarjeta representa una solución pensada para impulsar tu marca, comunicar tu mensaje y hacer que tu empresa deje huella.
+            </p>
+            <p class="mt-3" style="font-size:1.08rem; color:#444;">
+                ¿Buscas algo específico? Haz clic en la tarjeta que más se ajuste a tu necesidad o <a href="#contacto" class="fw-bold" style="color:#b53600;">contáctanos</a> para asesoría personalizada.
+            </p>
+        </div>
+        <div class="div-portafolio">
+            <!-- Aquí van las tarjetas de portafolio -->
+            <div class="tarjt-portafolio">
+                <div>
+                    <img src="{% static 'images/AgendasHuellas.png' %}" alt="Agendas Huellas">
+                </div>
+                <div class="text">
+                    <h1>Agendas Huellas</h1>
+                    <p>Hagamos tus agendas personalizadas para tus clientes y comunidades</p>
+                    <p>Busquemos la opción que más se ajuste en color, materiales y diseño.</p>
+                    <a href="https://wa.me/573114831429" target="_blank" class="boton-2 d-inline-flex align-items-center">
+                        Coticemos e imprimamos
+                        <i class="bi bi-whatsapp ms-2"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="tarjt-portafolio">
+                <div>
+                    <img src="{% static 'images/BolsasYEmbalaje.png' %}" alt="Empaques">
+                </div>
+                <div class="text">
+                    <h1>Bolsas y embalaje para tus productos</h1>
+                    <p>Hagamos tus bolsas o empaques para tus productos</p>
+                    <p>Busquemos la opción que más se ajuste en color, materiales y diseño.</p>
+                    <a href="https://wa.me/573114831429" target="_blank" class="boton-2 d-inline-flex align-items-center">
+                        Coticemos e imprimamos
+                        <i class="bi bi-whatsapp ms-2"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="tarjt-portafolio">
+                <div>
+                    <img src="{% static 'images/CuadernosHuellas.png' %}" alt="">
+                </div>
+                <div class="text">
+                    <h1>Cuadernos Huellas</h1>
+                    <p>Hagamos tus cuadernos y proyectemos la imagen de alto impacto de tu marca.</p>
+                    <p>Busquemos la opción que más se ajuste en color, materiales y diseño.</p>
+                    <a href="https://wa.me/573114831429" target="_blank" class="boton-2 d-inline-flex align-items-center">
+                        Coticemos e imprimamos
+                        <i class="bi bi-whatsapp ms-2"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="tarjt-portafolio">
+                <div>
+                    <img src="{% static 'images/EtiquetasHuellas.png' %}" alt="Etiquetas Huellas">
+                </div>
+                <div class="text">
+                    <h1>Etiquetas Personalizadas</h1>
+                    <p>Haz que tu marca destaque con etiquetas únicas y de alta calidad para tus productos.</p>
+                    <p>Ofrecemos etiquetas adhesivas, troqueladas y en diferentes materiales, ideales para cualquier necesidad comercial o promocional.</p>
+                    <a href="https://wa.me/573114831429" target="_blank" class="boton-2 d-inline-flex align-items-center">
+                        Coticemos tus etiquetas
+                        <i class="bi bi-whatsapp ms-2"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="tarjt-portafolio">
+                <div>
+                    <img src="{% static 'images/Pendones.png' %}" alt="Pendones">
+                </div>
+                <div class="text">
+                    <h1>Impresión Digital</h1>
+                    <p>Con nuestro servicio podrás realizar tus banners, pendones e impresiones de largo formato.</p>
+                    <p>Busquemos la opción que más se ajuste en color, materiales y diseño.</p>
+                    <a href="https://wa.me/573114831429" target="_blank" class="boton-2 d-inline-flex align-items-center">
+                        Coticemos e imprimamos
+                        <i class="bi bi-whatsapp ms-2"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="tarjt-portafolio">
+                <div>
+                    <img src="{% static 'images/MaterialPOP.png' %}" alt="Material POP">
+                </div>
+                <div class="text">
+                    <h1>Material Publicitario POP</h1>
+                    <p>Personalizamos diferentes objetos publicitarios con tu marca, imagen y logos</p>
+                    <p>Busquemos la opción que más se ajuste en color, materiales y diseño.</p>
+                    <a href="https://wa.me/573114831429" target="_blank" class="boton-2 d-inline-flex align-items-center">
+                        Coticemos e imprimamos
+                        <i class="bi bi-whatsapp ms-2"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="tarjt-portafolio">
+                <div>
+                    <img src="{% static 'images/Libros.png' %}" alt="Libros">
+                </div>
+                <div class="text">
+                    <h1>Revistas, libros y cartillas</h1>
+                    <p>Hagamos que tus documentos, imágenes y fotografías comuniquen tu valor de marca.</p>
+                    <p>Busquemos la opción que más se ajuste en color, materiales y diseño.</p>
+                    <a href="https://wa.me/573114831429" target="_blank" class="boton-2 d-inline-flex align-items-center">
+                        Coticemos e imprimamos
+                        <i class="bi bi-whatsapp ms-2"></i>
+                    </a>
+                </div>
+            </div>
+           <div class="tarjt-portafolio">
+            <div>
+                <img src="{% static 'images/AcompanamientoGrafico.png' %}" alt="Acompañamiento Gráfico">
+            </div>
+            <div class="text">
+                <h1>Acompañamiento Gráfico Integral</h1>
+                <p>Te asesoramos en cada etapa de tu proyecto, desde la idea hasta la producción final de piezas publicitarias impresas.</p>
+                <p>Recibe acompañamiento profesional en diseño, selección de materiales y procesos de impresión para que tu marca destaque con calidad y creatividad.</p>
+                <a href="https://wa.me/573114831429" target="_blank" class="boton-2 d-inline-flex align-items-center">
+                    Hablemos de tu proyecto
+                    <i class="bi bi-whatsapp ms-2"></i>
+                </a>
+            </div>
+            </div>
+            <div class="tarjt-portafolio">
+                <div>
+                    <img src="{% static 'images/ImpresionOffset.png' %}" alt="Impresion">
+                </div>
+                <div class="text">
+                    <h1>Impresión off-set</h1>
+                    <p>Busquemos la opción que más se ajuste in color, materiales y diseño.</p>
+                    <p>Te asesoramos para imprimir en la dimensión adecuada para tus ideas. 
+                        Impresión 1/2, 1/4 y 1/8 pliego. Servicio de Impresión en 4*4 tintas.  
+                    </p>
+                    <a href="https://wa.me/573114831429" target="_blank" class="boton-2 d-inline-flex align-items-center">
+                        Coticemos e imprimamos
+                        <i class="bi bi-whatsapp ms-2"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="tarjt-portafolio">
+                <div>
+                    <img src="{% static 'images/Terminados.png' %}" alt="terminados">
+                </div>
+                <div class="text">
+                    <h1>Servicios de terminados</h1>
+                    <p>Así como la impresión es un arte los terminados son los detalles.</p>
+                    <p>Busquemos la opción que más se ajuste en color, materiales y diseño.</p>
+                    <a href="https://wa.me/573114831429" target="_blank" class="boton-2 d-inline-flex align-items-center">
+                        Coticemos e imprimamos
+                        <i class="bi bi-whatsapp ms-2"></i>
+                    </a>
+                </div>
+            </div>
+            
+        </div>
+        <div class="d-vermas text-center mt-4">
+            <a href="https://www.instagram.com/huellaslitograficas/" target="_blank"
+               class="boton-1 btn btn-lg d-inline-flex align-items-center gap-2 instagram-link">
+                Ver más en Instagram
+                <i class="bi bi-instagram"></i>
+            </a>
+        </div>
+    </div>
+</section>
+<!--fin seccion portafolio-->
+
+<section id="contacto" class="py-5 bg-light">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-7">
+                <h2 class="mb-4">Contáctanos</h2>
+                <form method="post" action="{% url 'enviar_contacto' %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="nombre" class="form-label">Nombre</label>
+                        <input type="text" class="form-control" id="nombre" name="nombre" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Correo electrónico</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="telefono" class="form-label">Teléfono</label>
+                        <input type="text" class="form-control" id="telefono" name="telefono">
+                    </div>
+                    <div class="mb-3">
+                        <label for="mensaje" class="form-label">Mensaje o requerimiento</label>
+                        <textarea class="form-control" id="mensaje" name="mensaje" rows="4" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        Enviar mensaje
+                        <i class="bi bi-envelope ms-2"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+{% if messages %}
+  <div class="container mt-3">
+    {% for message in messages %}
+      <div class="alert alert-success" role="alert">
+        {{ message }}
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+{% endblock %}
+

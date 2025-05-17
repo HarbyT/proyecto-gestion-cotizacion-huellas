@@ -5,11 +5,15 @@
 {% block content %}
 <h2>Detalle de la Cotización</h2>
 <p><strong>Cliente:</strong> {{ cotizacion.cliente.nombre }}</p>
+<p><strong>Fecha de Creación:</strong> {{ cotizacion.fecha_creacion }}</p>
 <p><strong>Estado:</strong> {{ cotizacion.estado }}</p>
+<p><strong>Subtotal:</strong> {{ cotizacion.sub_total }}</p>
+<p><strong>IVA:</strong> {{ cotizacion.iva }}%</p>
 <p><strong>Total:</strong> {{ cotizacion.total }}</p>
+<p><strong>Margen de Ganancia:</strong> {{ cotizacion.margen_ganancia }}%</p>
 <p><strong>Observaciones:</strong> {{ cotizacion.observaciones }}</p>
 
-<h3>Detalles</h3>
+<h3>Detalles de Productos</h3>
 <table class="table">
     <thead>
         <tr>
