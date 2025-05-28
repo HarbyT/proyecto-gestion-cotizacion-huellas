@@ -1,34 +1,314 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Lista de Cotizaciones{% endblock %}
+{% block title %}Gestión de Cotizaciones - Huellas Litográficas{% endblock %}
 
 {% block content %}
-<h2>Lista de Cotizaciones</h2>
-<table class="table">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Cliente</th>
-            <th>Estado</th>
-            <th>Total</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for cotizacion in cotizaciones %}
-        <tr>
-            <td>{{ cotizacion.id }}</td>
-            <td>{{ cotizacion.cliente.nombre }}</td>
-            <td>{{ cotizacion.estado }}</td>
-            <td>{{ cotizacion.total }}</td>
-            <td>
-                <a href="{% url 'cotizacion_detail' cotizacion.id %}" class="btn btn-primary btn-sm">Ver</a>
-                <a href="{% url 'cotizacion_update' cotizacion.id %}" class="btn btn-warning btn-sm">Editar</a>
-                <a href="{% url 'cotizacion_delete' cotizacion.id %}" class="btn btn-danger btn-sm">Eliminar</a>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-<a href="{% url 'cotizacion_create' %}" class="btn btn-success">Nueva Cotización</a>
+<div class="container-fluid py-4">
+    <!-- Header con estadísticas -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center flex-wrap mb-3">
+                <div>
+                    <h1 class="h2 fw-bold text-primary mb-2">
+                        <i class="bi bi-file-text me-2"></i>Gestión de Cotizaciones
+                    </h1>
+                    <p class="text-muted">Administra todas las cotizaciones del sistema</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'cotizaciones:cotizacion_create' %}" class="btn btn-primary d-flex align-items-center gap-2">
+                        <i class="bi bi-plus-circle"></i>
+                        <span class="d-none d-sm-inline">Nueva Cotización</span>
+                    </a>
+                    <a href="{% url 'cotizaciones:reportes' %}" class="btn btn-outline-info d-flex align-items-center gap-2">
+                        <i class="bi bi-graph-up"></i>
+                        <span class="d-none d-sm-inline">Reportes</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estadísticas rápidas -->
+    <div class="row mb-4">
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="card bg-primary text-white border-0 shadow-sm">
+                <div class="card-body d-flex align-items-center">
+                    <div class="flex-grow-1">
+                        <h5 class="card-title h3 mb-0">{{ stats.total }}</h5>
+                        <p class="card-text mb-0">Total Cotizaciones</p>
+                    </div>
+                    <i class="bi bi-file-text fs-1 opacity-75"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="card bg-warning text-white border-0 shadow-sm">
+                <div class="card-body d-flex align-items-center">
+                    <div class="flex-grow-1">
+                        <h5 class="card-title h3 mb-0">{{ stats.borradores }}</h5>
+                        <p class="card-text mb-0">Borradores</p>
+                    </div>
+                    <i class="bi bi-pencil fs-1 opacity-75"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="card bg-info text-white border-0 shadow-sm">
+                <div class="card-body d-flex align-items-center">
+                    <div class="flex-grow-1">
+                        <h5 class="card-title h3 mb-0">{{ stats.enviadas }}</h5>
+                        <p class="card-text mb-0">Enviadas</p>
+                    </div>
+                    <i class="bi bi-send fs-1 opacity-75"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="card bg-success text-white border-0 shadow-sm">
+                <div class="card-body d-flex align-items-center">
+                    <div class="flex-grow-1">
+                        <h5 class="card-title h3 mb-0">{{ stats.aceptadas }}</h5>
+                        <p class="card-text mb-0">Aceptadas</p>
+                    </div>
+                    <i class="bi bi-check-circle fs-1 opacity-75"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Filtros -->
+        <div class="col-lg-3 mb-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0 fw-bold">
+                        <i class="bi bi-funnel me-2"></i>Filtros
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form method="get" id="filtroForm">
+                        <!-- Búsqueda -->
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">Buscar</label>
+                            {{ filtros_form.buscar }}
+                        </div>
+
+                        <!-- Cliente -->
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">Cliente</label>
+                            {{ filtros_form.cliente }}
+                        </div>
+
+                        <!-- Estado -->
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">Estado</label>
+                            {{ filtros_form.estado }}
+                        </div>
+
+                        <!-- Fechas -->
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">Fecha Desde</label>
+                            {{ filtros_form.fecha_desde }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">Fecha Hasta</label>
+                            {{ filtros_form.fecha_hasta }}
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-sm">
+                                <i class="bi bi-search me-1"></i>Aplicar Filtros
+                            </button>
+                            <a href="{% url 'cotizaciones:cotizacion_list' %}" class="btn btn-outline-secondary btn-sm">
+                                <i class="bi bi-arrow-clockwise me-1"></i>Limpiar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lista de cotizaciones -->
+        <div class="col-lg-9">
+            <!-- Información de resultados -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <small class="text-muted">
+                    {% if cotizaciones %}
+                        Mostrando {{ cotizaciones|length }} cotizaciones
+                        {% if is_paginated %}
+                            de {{ paginator.count }} totales
+                        {% endif %}
+                    {% else %}
+                        No se encontraron cotizaciones
+                    {% endif %}
+                </small>
+            </div>
+
+            {% if cotizaciones %}
+                <div class="row g-3">
+                    {% for cotizacion in cotizaciones %}
+                    <div class="col-12">
+                        <div class="card shadow-sm border-0 cotizacion-card">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col-lg-8">
+                                        <div class="d-flex align-items-start">
+                                            <div class="flex-grow-1">
+                                                <div class="d-flex align-items-center gap-2 mb-2">
+                                                    <h5 class="card-title mb-0 fw-bold">{{ cotizacion.codigo }}</h5>
+                                                    <span class="badge {% if cotizacion.estado == 'borrador' %}bg-warning{% elif cotizacion.estado == 'enviada' %}bg-info{% elif cotizacion.estado == 'aceptada' %}bg-success{% elif cotizacion.estado == 'rechazada' %}bg-danger{% else %}bg-secondary{% endif %}">
+                                                        {{ cotizacion.get_estado_display }}
+                                                    </span>
+                                                    {% if cotizacion.version > 1 %}
+                                                        <span class="badge bg-light text-dark">v{{ cotizacion.version }}</span>
+                                                    {% endif %}
+                                                </div>
+                                                
+                                                <h6 class="text-primary mb-1">{{ cotizacion.titulo }}</h6>
+                                                
+                                                <div class="d-flex align-items-center gap-3 text-muted small mb-2">
+                                                    <span>
+                                                        <i class="bi bi-person me-1"></i>{{ cotizacion.cliente.nombre }}
+                                                        {% if cotizacion.cliente.empresa %}
+                                                            - {{ cotizacion.cliente.empresa }}
+                                                        {% endif %}
+                                                    </span>
+                                                    <span>
+                                                        <i class="bi bi-calendar me-1"></i>{{ cotizacion.fecha_creacion|date:"d/m/Y" }}
+                                                    </span>
+                                                    <span>
+                                                        <i class="bi bi-box me-1"></i>{{ cotizacion.detalles.count }} productos
+                                                    </span>
+                                                </div>
+                                                
+                                                {% if cotizacion.descripcion %}
+                                                    <p class="text-muted small mb-0">{{ cotizacion.descripcion|truncatechars:100 }}</p>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-lg-4 text-lg-end">
+                                        <div class="mb-2">
+                                            <span class="h4 text-success fw-bold">${{ cotizacion.total|floatformat:0 }}</span>
+                                            <small class="text-muted d-block">Total cotización</small>
+                                        </div>
+                                        
+                                        <div class="d-flex gap-1 justify-content-lg-end">
+                                            <a href="{% url 'cotizaciones:cotizacion_detail' cotizacion.pk %}" 
+                                               class="btn btn-outline-primary btn-sm">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <a href="{% url 'cotizaciones:cotizacion_update' cotizacion.pk %}" 
+                                               class="btn btn-outline-warning btn-sm">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <a href="{% url 'cotizaciones:duplicar_cotizacion' cotizacion.pk %}" 
+                                               class="btn btn-outline-info btn-sm"
+                                               title="Duplicar cotización">
+                                                <i class="bi bi-files"></i>
+                                            </a>
+                                            <div class="dropdown">
+                                                <button class="btn btn-outline-secondary btn-sm dropdown-toggle" 
+                                                        type="button" data-bs-toggle="dropdown">
+                                                    <i class="bi bi-three-dots"></i>
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <li><a class="dropdown-item" href="#" onclick="enviarEmail({{ cotizacion.pk }})">
+                                                        <i class="bi bi-envelope me-2"></i>Enviar por Email
+                                                    </a></li>
+                                                    <li><a class="dropdown-item" href="#" onclick="enviarWhatsApp({{ cotizacion.pk }})">
+                                                        <i class="bi bi-whatsapp me-2"></i>Enviar por WhatsApp
+                                                    </a></li>
+                                                    <li><a class="dropdown-item" href="#">
+                                                        <i class="bi bi-file-pdf me-2"></i>Descargar PDF
+                                                    </a></li>
+                                                    <li><hr class="dropdown-divider"></li>
+                                                    <li><a class="dropdown-item text-danger" href="{% url 'cotizaciones:cotizacion_delete' cotizacion.pk %}">
+                                                        <i class="bi bi-trash me-2"></i>Eliminar
+                                                    </a></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Paginación -->
+                {% if is_paginated %}
+                    <nav aria-label="Paginación de cotizaciones" class="mt-4">
+                        <ul class="pagination justify-content-center">
+                            {% if page_obj.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=1{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                                        <i class="bi bi-chevron-double-left"></i>
+                                    </a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                                        <i class="bi bi-chevron-left"></i>
+                                    </a>
+                                </li>
+                            {% endif %}
+
+                            <li class="page-item active">
+                                <span class="page-link">{{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+                            </li>
+
+                            {% if page_obj.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                                        <i class="bi bi-chevron-right"></i>
+                                    </a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                                        <i class="bi bi-chevron-double-right"></i>
+                                    </a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                {% endif %}
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="bi bi-file-text text-muted" style="font-size: 4rem;"></i>
+                    <h4 class="text-muted mt-3">No hay cotizaciones disponibles</h4>
+                    <p class="text-muted">Comienza creando tu primera cotización</p>
+                    <a href="{% url 'cotizaciones:cotizacion_create' %}" class="btn btn-primary">
+                        <i class="bi bi-plus-circle me-2"></i>Crear Primera Cotización
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+function enviarEmail(cotizacionId) {
+    // Implementar envío por email
+    alert('Funcionalidad de envío por email en desarrollo');
+}
+
+function enviarWhatsApp(cotizacionId) {
+    // Implementar envío por WhatsApp
+    alert('Funcionalidad de envío por WhatsApp en desarrollo');
+}
+</script>
+
+<style>
+.cotizacion-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.cotizacion-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+}
+</style>
 {% endblock %}

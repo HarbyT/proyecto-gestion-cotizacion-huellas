@@ -12,30 +12,47 @@ from django.contrib import messages
 
 class ClienteList(LoginRequiredMixin, ListView):
     model = Cliente
-    template_name = 'cliente_list.html'
+    template_name = 'clientes/cliente_list.html'
     context_object_name = 'clientes'
+    paginate_by = 10
+    
+    def get_queryset(self):
+        return Cliente.objects.filter(activo=True).order_by('-fecha_creacion')
 
 class ClienteDetail(LoginRequiredMixin, DetailView):
     model = Cliente
-    template_name = 'cliente_detail.html'
+    template_name = 'clientes/cliente_detail.html'
     context_object_name = 'cliente'
 
 class ClienteCreate(LoginRequiredMixin, CreateView):
     model = Cliente
-    template_name = 'cliente_form.html'
-    fields = '__all__'
-    success_url = reverse_lazy('cliente_list')
+    template_name = 'clientes/cliente_form.html'
+    fields = ['nombre', 'correo', 'telefono', 'direccion', 'detalle_facturacion', 'activo']
+    success_url = reverse_lazy('clientes:cliente_list')
+    
+    def form_valid(self, form):
+        messages.success(self.request, f'Cliente "{form.instance.nombre}" creado exitosamente.')
+        return super().form_valid(form)
 
 class ClienteUpdate(LoginRequiredMixin, UpdateView):
     model = Cliente
-    template_name = 'cliente_form.html'
-    fields = '__all__'
-    success_url = reverse_lazy('cliente_list')
+    template_name = 'clientes/cliente_form.html'
+    fields = ['nombre', 'correo', 'telefono', 'direccion', 'detalle_facturacion', 'activo']
+    success_url = reverse_lazy('clientes:cliente_list')
+    
+    def form_valid(self, form):
+        messages.success(self.request, f'Cliente "{form.instance.nombre}" actualizado exitosamente.')
+        return super().form_valid(form)
 
 class ClienteDelete(LoginRequiredMixin, DeleteView):
     model = Cliente
-    template_name = 'cliente_confirm_delete.html'
-    success_url = reverse_lazy('cliente_list')
+    template_name = 'clientes/cliente_confirm_delete.html'
+    success_url = reverse_lazy('clientes:cliente_list')
+    
+    def delete(self, request, *args, **kwargs):
+        cliente = self.get_object()
+        messages.success(request, f'Cliente "{cliente.nombre}" eliminado exitosamente.')
+        return super().delete(request, *args, **kwargs)
 
 @require_POST
 def enviar_contacto(request):
@@ -44,9 +61,6 @@ def enviar_contacto(request):
     telefono = request.POST.get('telefono')
     mensaje = request.POST.get('mensaje')
 
-    # Aquí puedes guardar en un modelo si lo deseas
-
-    # Enviar correo
     send_mail(
         subject=f'Nuevo contacto de {nombre}',
         message=f'Nombre: {nombre}\nEmail: {email}\nTeléfono: {telefono}\n\nMensaje:\n{mensaje}',

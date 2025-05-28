@@ -1,0 +1,194 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ cliente.nombre }} - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-user"></i> Información del Cliente
+                </h5>
+                {% if cliente.activo %}
+                    <span class="badge bg-success">Activo</span>
+                {% else %}
+                    <span class="badge bg-danger">Inactivo</span>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">
+                                <i class="fas fa-user"></i> Nombre Completo
+                            </label>
+                            <p class="h5">{{ cliente.nombre }}</p>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label text-muted">
+                                <i class="fas fa-envelope"></i> Correo Electrónico
+                            </label>
+                            <p>
+                                <a href="mailto:{{ cliente.correo }}" class="text-decoration-none">
+                                    {{ cliente.correo }}
+                                </a>
+                            </p>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label text-muted">
+                                <i class="fas fa-phone"></i> Teléfono
+                            </label>
+                            <p>
+                                {% if cliente.telefono %}
+                                    <a href="tel:{{ cliente.telefono }}" class="text-decoration-none">
+                                        {{ cliente.telefono }}
+                                    </a>
+                                {% else %}
+                                    <span class="text-muted">No especificado</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">
+                                <i class="fas fa-calendar-plus"></i> Fecha de Registro
+                            </label>
+                            <p>{{ cliente.fecha_creacion|date:"d/m/Y H:i" }}</p>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label text-muted">
+                                <i class="fas fa-map-marker-alt"></i> Dirección
+                            </label>
+                            <p>
+                                {% if cliente.direccion %}
+                                    {{ cliente.direccion|linebreaks }}
+                                {% else %}
+                                    <span class="text-muted">No especificada</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                {% if cliente.detalle_facturacion %}
+                <hr>
+                <div class="mb-3">
+                    <label class="form-label text-muted">
+                        <i class="fas fa-file-invoice"></i> Información de Facturación
+                    </label>
+                    <div class="border rounded p-3 bg-light">
+                        {{ cliente.detalle_facturacion|linebreaks }}
+                    </div>
+                </div>
+                {% endif %}
+                
+                <hr>
+                
+                <div class="d-flex justify-content-between">
+                    <a href="{% url 'clientes:cliente_list' %}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Volver a la lista
+                    </a>
+                    <div>
+                        <a href="{% url 'clientes:cliente_update' cliente.id %}" class="btn btn-warning me-2">
+                            <i class="fas fa-edit"></i> Editar
+                        </a>
+                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                            <i class="fas fa-trash"></i> Eliminar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card shadow mb-4">
+            <div class="card-header">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-chart-line"></i> Resumen de Actividad
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="text-center">
+                    <div class="mb-3">
+                        <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center" 
+                             style="width: 60px; height: 60px; font-size: 24px;">
+                            {{ cliente.nombre|first|upper }}
+                        </div>
+                    </div>
+                    <h6>{{ cliente.nombre }}</h6>
+                    <p class="text-muted">Cliente desde {{ cliente.fecha_creacion|date:"M Y" }}</p>
+                </div>
+                
+                <hr>
+                
+                <div class="row text-center">
+                    <div class="col-6">
+                        <div class="mb-2">
+                            <div class="h4 mb-0 text-primary">0</div>
+                            <small class="text-muted">Cotizaciones</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="mb-2">
+                            <div class="h4 mb-0 text-success">$0</div>
+                            <small class="text-muted">Total Facturado</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card shadow">
+            <div class="card-header">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-tools"></i> Acciones Rápidas
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-plus"></i> Nueva Cotización
+                    </button>
+                    <button class="btn btn-outline-success btn-sm">
+                        <i class="fas fa-file-invoice"></i> Ver Facturas
+                    </button>
+                    <button class="btn btn-outline-info btn-sm">
+                        <i class="fas fa-history"></i> Historial
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de confirmación de eliminación -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-exclamation-triangle text-warning"></i> Confirmar Eliminación
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>¿Estás seguro de que deseas eliminar al cliente <strong>{{ cliente.nombre }}</strong>?</p>
+                <p class="text-muted">Esta acción no se puede deshacer.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <a href="{% url 'clientes:cliente_delete' cliente.id %}" class="btn btn-danger">
+                    <i class="fas fa-trash"></i> Eliminar
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

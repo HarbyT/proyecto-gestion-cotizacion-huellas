@@ -21,13 +21,19 @@ from huellas import views  # importa la vista home
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),
-    path('api/cuentas/', include('apps.cuentas.urls')),
-    path('api/cuentas/', include('django.contrib.auth.urls')),  # <-- Agrega esta línea
-    path('api/clientes/', include('apps.clientes.urls')),
-    path('api/productos/', include('apps.productos.urls')),
+    path('cuentas/', include('apps.cuentas.urls')),
+    path('cuentas/', include('django.contrib.auth.urls')),  # <-- Agrega esta línea
+    path('clientes/', include('apps.clientes.urls')),
+    path('productos/', include('apps.productos.urls')),
     #path('api/materiales/', include('apps.materiales.urls')),
     #path('api/maquinas/', include('apps.maquinas.urls')),
-    path('api/cotizaciones/', include('apps.cotizaciones.urls')),
+    path('cotizaciones/', include('apps.cotizaciones.urls')),
+    path('contacto/', views.enviar_contacto, name='enviar_contacto'),
     #path('api/reportes/', include('apps.reportes.urls')),
-    #path('api/notificaciones/', include('apps.notificaciones.urls')),
+    path('notificaciones/', include('apps.notificaciones.urls')),
+
+# Autenticación
+    #path('accounts/login/', views.login_view, name='login'),
+    #path('accounts/logout/', views.logout_view, name='logout'),
+    #path('accounts/registro/', views.registro_view, name='registro'),
 ]

@@ -5,60 +5,88 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Huellas Litográficas{% endblock %}</title>
     
-    <!-- Cargar la biblioteca static -->
-    {% load static %}
-    
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <!-- Bootstrap Icons CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <!-- Tu CSS personalizado SIEMPRE al final -->
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
     
-    {% block extra_css %}
-    <link href="https://fonts.googleapis.com/css?family=Merriweather&display=swap" rel="stylesheet">
-    {% endblock %}
+    {% block extra_css %}{% endblock %}
 </head>
 <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container-fluid">
-            <a class="navbar-brand" href="{% url 'home' %}">Huellas Litográficas</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <a class="navbar-brand fw-bold" href="{% url 'home' %}">
+                <i class="bi bi-fingerprint me-2"></i>
+                Huellas Litográficas
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
+            
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
+                <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="{% url 'home' %}">Home</a>
+                        <a class="nav-link" href="{% url 'home' %}">
+                            <i class="bi bi-house me-1"></i>Dashboard
+                        </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'clientes:cliente_list' %}">
+                            <i class="bi bi-people me-1"></i>Clientes
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-box me-1"></i>Productos
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'productos:producto_list' %}">
+                                <i class="bi bi-grid me-2"></i>Catálogo
+                            </a></li>
+                            <li><a class="dropdown-item" href="{% url 'productos:categoria_list' %}">
+                                <i class="bi bi-collection me-2"></i>Categorías
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'productos:producto_create' %}">
+                                <i class="bi bi-plus-circle me-2"></i>Nuevo Producto
+                            </a></li>
+                            <li><a class="dropdown-item" href="{% url 'productos:categoria_create' %}">
+                                <i class="bi bi-plus me-2"></i>Nueva Categoría
+                            </a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'cotizaciones:cotizacion_list' %}">
+                            <i class="bi bi-file-text me-1"></i>Cotizaciones
+                        </a>
+                    </li>
+                </ul>
+                
+                <ul class="navbar-nav">
                     {% if user.is_authenticated %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'cliente_list' %}">Clientes</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'producto_list' %}">Productos</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'cotizacion_list' %}">Cotizaciones</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'perfil' %}">Mi Perfil</a>
-                        </li>
-                        <li class="nav-item">
-                            <span class="navbar-text text-light me-2">
-                                {{ user.username }}
-                            </span>
-                        </li>
-                        <li class="nav-item">
-                            <form action="{% url 'logout' %}" method="post" style="display:inline;">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-outline-light btn-sm ms-2">Cerrar sesión</button>
-                            </form>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-person-circle me-1"></i>{{ user.get_full_name|default:user.username }}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="{% url 'cuentas:perfil' %}">
+                                    <i class="bi bi-person me-2"></i>Mi Perfil
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{% url 'logout' %}">
+                                    <i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión
+                                </a></li>
+                            </ul>
                         </li>
                     {% else %}
                         <li class="nav-item">
-                            <a class="btn btn-outline-light btn-sm ms-2" href="{% url 'login' %}">Iniciar sesión</a>
+                            <a class="nav-link" href="{% url 'cuentas:login' %}">
+                                <i class="bi bi-box-arrow-in-right me-1"></i>Iniciar Sesión
+                            </a>
                         </li>
                     {% endif %}
                 </ul>
@@ -66,22 +94,43 @@
         </div>
     </nav>
 
-    <!-- Contenido principal -->
-    <div class="container">
+    <!-- Main Content -->
+    <main>
+        {% if messages %}
+            <div class="container-fluid mt-3">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
         {% block content %}
-        <h1 class="mt-4">Bienvenido a Huellas Litográficas</h1>
-        <p class="lead">Aquí puedes gestionar tus clientes, productos y cotizaciones.</p>
-        <p>Utiliza el menú de navegación para acceder a las diferentes secciones.</p>
-        {% endblock %}     
-    </div>
+        {% endblock %}
+    </main>
 
     <!-- Footer -->
-    <footer class="bg-dark text-white text-center py-3 mt-4">
-        <p>&copy; 2024 Huellas Litográficas. Todos los derechos reservados.</p>
+    <footer class="bg-light py-4 mt-5">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <p class="text-muted mb-0">
+                        &copy; {% now "Y" %} Huellas Litográficas. Todos los derechos reservados.
+                    </p>
+                </div>
+            </div>
+        </div>
     </footer>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
     
     {% block extra_js %}{% endblock %}
 </body>

@@ -1,15 +1,300 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Detalle de Producto{% endblock %}
+{% block title %}{{ producto.nombre }} - Detalle del Producto{% endblock %}
 
 {% block content %}
-<h1 class="mb-4">Detalle del Producto</h1>
+<div class="container-fluid py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'productos:producto_list' %}">Productos</a></li>
+            <li class="breadcrumb-item">{{ producto.categoria.nombre }}</li>
+            <li class="breadcrumb-item active">{{ producto.nombre }}</li>
+        </ol>
+    </nav>
 
-<p><strong>Nombre:</strong> {{ producto.nombre }}</p>
-<p><strong>Categoría:</strong> {{ producto.categoria }}</p>
-<p><strong>Tipo de Encuadernación:</strong> {{ producto.tipo_encuadernacion }}</p>
-<p><strong>Imagen:</strong> <img src="{{ producto.imagen }}" alt="{{ producto.nombre }}" style="max-width: 300px;"></p>
-<p><strong>Plantilla:</strong> <a href="{{ producto.plantilla }}">Descargar</a></p>
+    <div class="row">
+        <!-- Galería de Imágenes -->
+        <div class="col-lg-6 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-0">
+                    <!-- Imagen Principal -->
+                    <div class="position-relative">
+                        {% if producto.imagen_principal %}
+                            <img src="{{ producto.imagen_principal.url }}" 
+                                 class="img-fluid w-100 rounded-top" 
+                                 style="height: 400px; object-fit: cover;"
+                                 alt="{{ producto.nombre }}">
+                        {% else %}
+                            <div class="bg-light d-flex align-items-center justify-content-center rounded-top" 
+                                 style="height: 400px;">
+                                <i class="bi bi-image text-muted" style="font-size: 5rem;"></i>
+                            </div>
+                        {% endif %}
+                        
+                        <!-- Badge de Estado -->
+                        <div class="position-absolute top-0 end-0 m-3">
+                            {% if producto.activo %}
+                                <span class="badge bg-success fs-6 px-3 py-2">Disponible</span>
+                            {% else %}
+                                <span class="badge bg-secondary fs-6 px-3 py-2">No Disponible</span>
+                            {% endif %}
+                        </div>
+                    </div>
 
-<a href="{% url 'producto_list' %}" class="btn btn-secondary">Volver</a>
+                    <!-- Imágenes Adicionales -->
+                    {% if producto.get_imagenes_adicionales_list %}
+                        <div class="p-3">
+                            <h6 class="fw-bold mb-3">Imágenes Adicionales</h6>
+                            <div class="row g-2">
+                                {% for imagen_url in producto.get_imagenes_adicionales_list %}
+                                    <div class="col-4">
+                                        <img src="{{ imagen_url }}" 
+                                             class="img-fluid rounded shadow-sm" 
+                                             style="height: 80px; object-fit: cover; cursor: pointer;"
+                                             onclick="cambiarImagenPrincipal('{{ imagen_url }}')"
+                                             alt="Imagen adicional">
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Información del Producto -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <!-- Header -->
+                    <div class="d-flex justify-content-between align-items-start mb-4">
+                        <div>
+                            <h1 class="h2 fw-bold text-primary mb-2">{{ producto.nombre }}</h1>
+                            <div class="d-flex align-items-center gap-2 mb-3">
+                                <span class="badge bg-primary">{{ producto.categoria.nombre }}</span>
+                                {% if producto.subcategoria %}
+                                    <span class="badge bg-outline-secondary">{{ producto.subcategoria }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% if producto.precio_base %}
+                            <div class="text-end">
+                                <div class="h3 text-success fw-bold mb-0">${{ producto.precio_base|floatformat:0 }}</div>
+                                <small class="text-muted">Precio base</small>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Descripción -->
+                    {% if producto.descripcion %}
+                        <div class="mb-4">
+                            <h5 class="fw-bold text-secondary mb-3">Descripción</h5>
+                            <p class="text-muted lh-lg">{{ producto.descripcion }}</p>
+                        </div>
+                    {% endif %}
+
+                    <!-- Especificaciones Técnicas -->
+                    <div class="mb-4">
+                        <h5 class="fw-bold text-secondary mb-3">
+                            <i class="bi bi-gear me-2"></i>Especificaciones Técnicas
+                        </h5>
+                        <div class="row g-3">
+                            {% if producto.tipo_papel %}
+                                <div class="col-sm-6">
+                                    <div class="spec-item">
+                                        <i class="bi bi-file-earmark text-primary me-2"></i>
+                                        <strong>Tipo de Papel:</strong><br>
+                                        <span class="text-muted">{{ producto.get_tipo_papel_display }}</span>
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                            {% if producto.gramaje %}
+                                <div class="col-sm-6">
+                                    <div class="spec-item">
+                                        <i class="bi bi-weight text-primary me-2"></i>
+                                        <strong>Gramaje:</strong><br>
+                                        <span class="text-muted">{{ producto.gramaje }} gramos</span>
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                            {% if producto.tamaño %}
+                                <div class="col-sm-6">
+                                    <div class="spec-item">
+                                        <i class="bi bi-aspect-ratio text-primary me-2"></i>
+                                        <strong>Tamaño:</strong><br>
+                                        <span class="text-muted">{{ producto.tamaño }}</span>
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                            {% if producto.numero_paginas %}
+                                <div class="col-sm-6">
+                                    <div class="spec-item">
+                                        <i class="bi bi-file-text text-primary me-2"></i>
+                                        <strong>Número de Páginas:</strong><br>
+                                        <span class="text-muted">{{ producto.numero_paginas }} páginas</span>
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                            {% if producto.tipo_encuadernacion %}
+                                <div class="col-sm-6">
+                                    <div class="spec-item">
+                                        <i class="bi bi-book text-primary me-2"></i>
+                                        <strong>Encuadernación:</strong><br>
+                                        <span class="text-muted">{{ producto.get_tipo_encuadernacion_display }}</span>
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                            {% if producto.acabados_especiales %}
+                                <div class="col-12">
+                                    <div class="spec-item">
+                                        <i class="bi bi-stars text-primary me-2"></i>
+                                        <strong>Acabados Especiales:</strong><br>
+                                        <span class="text-muted">{{ producto.acabados_especiales }}</span>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Plantilla y Archivos -->
+                    {% if producto.plantilla_ejemplo %}
+                        <div class="mb-4">
+                            <h5 class="fw-bold text-secondary mb-3">
+                                <i class="bi bi-download me-2"></i>Recursos
+                            </h5>
+                            <div class="d-flex align-items-center gap-3 p-3 bg-light rounded">
+                                <i class="bi bi-file-earmark-pdf text-danger fs-3"></i>
+                                <div>
+                                    <div class="fw-semibold">Plantilla de Ejemplo</div>
+                                    <small class="text-muted">Descarga la plantilla base para este producto</small>
+                                </div>
+                                <a href="{{ producto.plantilla_ejemplo.url }}" 
+                                   class="btn btn-outline-primary btn-sm ms-auto" 
+                                   download>
+                                    <i class="bi bi-download me-1"></i>Descargar
+                                </a>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <!-- Información Adicional -->
+                    <div class="mb-4">
+                        <h5 class="fw-bold text-secondary mb-3">
+                            <i class="bi bi-info-circle me-2"></i>Información Adicional
+                        </h5>
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <small class="text-muted">Fecha de Creación:</small><br>
+                                <span>{{ producto.fecha_creacion|date:"d/m/Y H:i" }}</span>
+                            </div>
+                            <div class="col-sm-6">
+                                <small class="text-muted">Última Actualización:</small><br>
+                                <span>{{ producto.fecha_actualizacion|date:"d/m/Y H:i" }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Botones de Acción -->
+                    <div class="d-flex gap-2 flex-wrap">
+                        <a href="{% url 'productos:producto_update' producto.id %}" 
+                           class="btn btn-primary d-flex align-items-center gap-2">
+                            <i class="bi bi-pencil"></i>Editar Producto
+                        </a>
+                        <a href="{% url 'productos:producto_list' %}" 
+                           class="btn btn-outline-secondary d-flex align-items-center gap-2">
+                            <i class="bi bi-arrow-left"></i>Volver al Catálogo
+                        </a>
+                        <button class="btn btn-outline-success d-flex align-items-center gap-2"
+                                onclick="crearCotizacion({{ producto.id }})">
+                            <i class="bi bi-plus-circle"></i>Crear Cotización
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Productos Relacionados -->
+    {% if productos_relacionados %}
+        <div class="row mt-5">
+            <div class="col-12">
+                <h3 class="fw-bold text-secondary mb-4">
+                    <i class="bi bi-collection me-2"></i>Productos Relacionados
+                </h3>
+                <div class="row g-3">
+                    {% for relacionado in productos_relacionados %}
+                        <div class="col-md-6 col-lg-3">
+                            <div class="card h-100 shadow-sm border-0 producto-relacionado">
+                                {% if relacionado.imagen_principal %}
+                                    <img src="{{ relacionado.imagen_principal.url }}" 
+                                         class="card-img-top" 
+                                         style="height: 150px; object-fit: cover;">
+                                {% else %}
+                                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center" 
+                                         style="height: 150px;">
+                                        <i class="bi bi-image text-muted"></i>
+                                    </div>
+                                {% endif %}
+                                <div class="card-body">
+                                    <h6 class="card-title">{{ relacionado.nombre }}</h6>
+                                    <p class="card-text small text-muted">{{ relacionado.descripcion|truncatechars:60 }}</p>
+                                    <a href="{% url 'productos:producto_detail' relacionado.id %}" 
+                                       class="btn btn-outline-primary btn-sm">Ver Detalle</a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+// Cambiar imagen principal al hacer clic en imágenes adicionales
+function cambiarImagenPrincipal(nuevaUrl) {
+    const imagenPrincipal = document.querySelector('.card-body img');
+    if (imagenPrincipal) {
+        imagenPrincipal.src = nuevaUrl;
+    }
+}
+
+// Función para crear cotización (puedes personalizar según tu lógica)
+function crearCotizacion(productoId) {
+    // Redirigir a la página de cotización con el producto preseleccionado
+    window.location.href = `/api/cotizaciones/crear/?producto=${productoId}`;
+}
+</script>
+
+<style>
+.spec-item {
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid var(--bs-primary);
+}
+
+.producto-relacionado {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.producto-relacionado:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+}
+
+@media (max-width: 768px) {
+    .spec-item {
+        padding: 0.75rem;
+        margin-bottom: 0.5rem;
+    }
+}
+</style>
 {% endblock %}

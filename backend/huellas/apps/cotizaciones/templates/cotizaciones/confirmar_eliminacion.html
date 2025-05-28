@@ -1,14 +1,256 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Confirmar Eliminación{% endblock %}
+{% block title %}Eliminar Cotización {{ cotizacion.codigo }} - Huellas Litográficas{% endblock %}
 
 {% block content %}
-<h2>Confirmar Eliminación</h2>
-<p>¿Estás seguro de que deseas eliminar la cotización <strong>{{ cotizacion.id }}</strong>?</p>
+<div class="container-fluid py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'cotizaciones:cotizacion_list' %}">Cotizaciones</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'cotizaciones:cotizacion_detail' cotizacion.id %}">{{ cotizacion.codigo }}</a></li>
+            <li class="breadcrumb-item active">Eliminar</li>
+        </ol>
+    </nav>
 
-<form method="post">
-    {% csrf_token %}
-    <button type="submit" class="btn btn-danger">Eliminar</button>
-    <a href="{% url 'cotizacion_list' %}" class="btn btn-secondary">Cancelar</a>
-</form>
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-xl-6">
+            <!-- Card de Confirmación -->
+            <div class="card shadow border-0">
+                <!-- Header con icono de advertencia -->
+                <div class="card-header bg-danger text-white text-center py-4">
+                    <i class="bi bi-exclamation-triangle-fill" style="font-size: 3rem;"></i>
+                    <h3 class="mt-3 mb-0 fw-bold">Confirmar Eliminación</h3>
+                </div>
+
+                <div class="card-body p-4">
+                    <!-- Información de la cotización -->
+                    <div class="text-center mb-4">
+                        <h4 class="text-danger fw-bold mb-2">{{ cotizacion.codigo }}</h4>
+                        <h6 class="text-primary mb-1">{{ cotizacion.titulo }}</h6>
+                        
+                        <div class="d-flex align-items-center justify-content-center gap-3 text-muted small mb-2">
+                            <span>
+                                <i class="bi bi-person me-1"></i>{{ cotizacion.cliente.nombre }}
+                            </span>
+                            <span>
+                                <i class="bi bi-calendar me-1"></i>{{ cotizacion.fecha_creacion|date:"d/m/Y" }}
+                            </span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <span class="badge fs-6 {% if cotizacion.estado == 'borrador' %}bg-warning{% elif cotizacion.estado == 'enviada' %}bg-info{% elif cotizacion.estado == 'aceptada' %}bg-success{% elif cotizacion.estado == 'rechazada' %}bg-danger{% else %}bg-secondary{% endif %}">
+                                {{ cotizacion.get_estado_display }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Mensaje de advertencia -->
+                    <div class="alert alert-warning border-0 shadow-sm mb-4">
+                        <div class="d-flex align-items-start">
+                            <i class="bi bi-exclamation-triangle text-warning me-3 mt-1" style="font-size: 1.5rem;"></i>
+                            <div>
+                                <h6 class="alert-heading fw-bold mb-2">¿Estás seguro de eliminar esta cotización?</h6>
+                                <p class="mb-2">Esta acción <strong>no se puede deshacer</strong>. Al eliminar la cotización:</p>
+                                <ul class="mb-0 small">
+                                    <li>Se perderá toda la información de la cotización</li>
+                                    <li>Se eliminarán todos los productos y detalles asociados</li>
+                                    <li>Se perderá el historial de cambios y comunicaciones</li>
+                                    <li>Los archivos y documentos asociados se eliminarán</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Información adicional de la cotización -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-sm-6">
+                            <div class="bg-light p-3 rounded">
+                                <small class="text-muted d-block">Total de la Cotización</small>
+                                <strong class="h6 text-success">${{ cotizacion.total|floatformat:0 }}</strong>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="bg-light p-3 rounded">
+                                <small class="text-muted d-block">Productos Incluidos</small>
+                                <strong>{{ cotizacion.detalles.count }} productos</strong>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="bg-light p-3 rounded">
+                                <small class="text-muted d-block">Fecha de Vencimiento</small>
+                                <strong class="{% if cotizacion.fecha_vencimiento < today %}text-danger{% endif %}">
+                                    {{ cotizacion.fecha_vencimiento|date:"d/m/Y" }}
+                                </strong>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="bg-light p-3 rounded">
+                                <small class="text-muted d-block">Creada por</small>
+                                <strong>{{ cotizacion.usuario_creador.get_full_name|default:cotizacion.usuario_creador.username }}</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Campo de confirmación -->
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">
+                            Para confirmar, escribe el código de la cotización:
+                        </label>
+                        <input type="text" 
+                               id="confirmacion" 
+                               class="form-control" 
+                               placeholder="Escribe: {{ cotizacion.codigo }}"
+                               autocomplete="off">
+                        <small class="text-muted">Esto ayuda a prevenir eliminaciones accidentales</small>
+                    </div>
+
+                    <!-- Alternativas -->
+                    <div class="alert alert-info border-0 mb-4">
+                        <h6 class="alert-heading fw-bold">
+                            <i class="bi bi-lightbulb me-2"></i>¿Consideraste estas alternativas?
+                        </h6>
+                        <ul class="mb-0 small">
+                            <li><strong>Cambiar estado:</strong> Puedes marcar la cotización como "Rechazada" en lugar de eliminarla</li>
+                            <li><strong>Archivar:</strong> Considera mantener un registro para futura referencia</li>
+                            <li><strong>Duplicar y modificar:</strong> Si necesitas una versión nueva, puedes duplicarla primero</li>
+                        </ul>
+                    </div>
+
+                    <!-- Formulario de eliminación -->
+                    <form method="post" id="deleteForm">
+                        {% csrf_token %}
+                        
+                        <!-- Botones de acción -->
+                        <div class="d-flex gap-3 justify-content-center">
+                            <button type="submit" 
+                                    id="deleteBtn"
+                                    class="btn btn-danger btn-lg px-4 d-flex align-items-center gap-2"
+                                    disabled>
+                                <i class="bi bi-trash"></i>
+                                Eliminar Cotización
+                            </button>
+                            
+                            <a href="{% url 'cotizaciones:cotizacion_detail' cotizacion.id %}" 
+                               class="btn btn-outline-secondary btn-lg px-4 d-flex align-items-center gap-2">
+                                <i class="bi bi-arrow-left"></i>
+                                Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Footer con enlaces adicionales -->
+                <div class="card-footer bg-light text-center">
+                    <small class="text-muted">
+                        ¿Prefieres mantener la cotización? 
+                        <a href="{% url 'cotizaciones:cotizacion_update' cotizacion.id %}" class="text-decoration-none">
+                            Edítala aquí
+                        </a> o 
+                        <a href="{% url 'cotizaciones:cambiar_estado' cotizacion.id %}" class="text-decoration-none">
+                            cambia su estado
+                        </a>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Validación de confirmación de código
+const confirmInput = document.getElementById('confirmacion');
+const deleteBtn = document.getElementById('deleteBtn');
+const deleteForm = document.getElementById('deleteForm');
+const codigoCotizacion = "{{ cotizacion.codigo }}";
+
+confirmInput.addEventListener('input', function() {
+    if (this.value === codigoCotizacion) {
+        deleteBtn.disabled = false;
+        deleteBtn.classList.remove('btn-secondary');
+        deleteBtn.classList.add('btn-danger');
+        this.classList.remove('is-invalid');
+        this.classList.add('is-valid');
+    } else {
+        deleteBtn.disabled = true;
+        deleteBtn.classList.remove('btn-danger');
+        deleteBtn.classList.add('btn-secondary');
+        this.classList.remove('is-valid');
+        if (this.value.length > 0) {
+            this.classList.add('is-invalid');
+        }
+    }
+});
+
+// Confirmación final antes de enviar
+deleteForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    if (confirmInput.value !== codigoCotizacion) {
+        alert('Debes escribir el código exacto de la cotización para confirmar la eliminación.');
+        confirmInput.focus();
+        return;
+    }
+    
+    // Confirmación adicional
+    if (!confirm('¿Estás absolutamente seguro? Esta acción no se puede deshacer.')) {
+        return;
+    }
+    
+    // Mostrar loading en el botón
+    deleteBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Eliminando...';
+    deleteBtn.disabled = true;
+    
+    // Enviar formulario después de un pequeño delay
+    setTimeout(() => {
+        this.submit();
+    }, 500);
+});
+
+// Enfoque automático al campo de confirmación
+confirmInput.focus();
+</script>
+
+<style>
+.card {
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.card-header {
+    border-bottom: none;
+}
+
+.btn-lg {
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+}
+
+.alert {
+    border-radius: 8px;
+}
+
+@media (max-width: 768px) {
+    .d-flex.gap-3 {
+        flex-direction: column;
+    }
+    
+    .btn-lg {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* Animación para el input de confirmación */
+#confirmacion.is-valid {
+    animation: validPulse 0.3s ease-in-out;
+}
+
+@keyframes validPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+}
+</style>
 {% endblock %}

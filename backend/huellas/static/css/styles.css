@@ -217,4 +217,15 @@
         padding: 1.5rem 1rem;
     }
 }
+@media (max-width: 1200px) {
+    .tarjt-portafolio img {
+        min-height: 150px;
+    }
+    .tarjt-portafolio .text h1 {
+        font-size: 1.2rem;
+    }
+    .tarjt-portafolio .text p {
+        font-size: 0.95rem;
+    }
+}
 

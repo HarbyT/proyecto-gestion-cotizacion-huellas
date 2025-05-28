@@ -1,14 +1,431 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}{{ view.object|default:"Crear Cotización" }}{% endblock %}
+{% block title %}
+    {% if object %}Editar Cotización {{ object.codigo }}{% else %}Nueva Cotización{% endif %} - Huellas Litográficas
+{% endblock %}
 
 {% block content %}
-<h1 class="mb-4">{{ view.object|default:"Crear Cotización" }}</h1>
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex align-items-center gap-3">
+                <a href="{% url 'cotizaciones:cotizacion_list' %}" 
+                   class="btn btn-outline-secondary d-flex align-items-center gap-2">
+                    <i class="bi bi-arrow-left"></i>
+                    <span class="d-none d-sm-inline">Volver</span>
+                </a>
+                <div>
+                    <h1 class="h2 fw-bold text-primary mb-0">
+                        {% if object %}
+                            <i class="bi bi-pencil me-2"></i>Editar Cotización {{ object.codigo }}
+                        {% else %}
+                            <i class="bi bi-plus-circle me-2"></i>Nueva Cotización
+                        {% endif %}
+                    </h1>
+                    <p class="text-muted mb-0">
+                        {% if object %}
+                            Modifica los detalles de la cotización
+                        {% else %}
+                            Completa la información para crear una nueva cotización
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-success">Guardar</button>
-    <a href="{% url 'cotizacion_list' %}" class="btn btn-secondary">Cancelar</a>
-</form>
+    <!-- Formulario -->
+    <form method="post" id="cotizacionForm" novalidate>
+        {% csrf_token %}
+        
+        <div class="row">
+            <!-- Información principal -->
+            <div class="col-lg-8">
+                <!-- Datos básicos -->
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-info-circle me-2"></i>Información Básica
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <!-- Cliente -->
+                            <div class="col-md-6">
+                                <label for="{{ form.cliente.id_for_label }}" class="form-label fw-semibold">
+                                    <i class="bi bi-person me-1"></i>Cliente *
+                                </label>
+                                {{ form.cliente }}
+                                {% if form.cliente.errors %}
+                                    <div class="text-danger small mt-1">{{ form.cliente.errors.0 }}</div>
+                                {% endif %}
+                                <div class="form-text">
+                                    <a href="#" class="text-decoration-none" onclick="crearClienteRapido()">
+                                        <i class="bi bi-plus-circle me-1"></i>Crear cliente nuevo
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- Fecha de vencimiento -->
+                            <div class="col-md-6">
+                                <label for="{{ form.fecha_vencimiento.id_for_label }}" class="form-label fw-semibold">
+                                    <i class="bi bi-calendar me-1"></i>Fecha de Vencimiento *
+                                </label>
+                                {{ form.fecha_vencimiento }}
+                                {% if form.fecha_vencimiento.errors %}
+                                    <div class="text-danger small mt-1">{{ form.fecha_vencimiento.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Título -->
+                            <div class="col-12">
+                                <label for="{{ form.titulo.id_for_label }}" class="form-label fw-semibold">
+                                    <i class="bi bi-tag me-1"></i>Título de la Cotización *
+                                </label>
+                                {{ form.titulo }}
+                                {% if form.titulo.errors %}
+                                    <div class="text-danger small mt-1">{{ form.titulo.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Descripción -->
+                            <div class="col-12">
+                                <label for="{{ form.descripcion.id_for_label }}" class="form-label fw-semibold">
+                                    <i class="bi bi-text-paragraph me-1"></i>Descripción del Proyecto
+                                </label>
+                                {{ form.descripcion }}
+                                {% if form.descripcion.errors %}
+                                    <div class="text-danger small mt-1">{{ form.descripcion.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Productos y servicios -->
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="bi bi-box me-2"></i>Productos y Servicios
+                        </h5>
+                        <button type="button" class="btn btn-light btn-sm" onclick="agregarDetalle()">
+                            <i class="bi bi-plus-circle me-1"></i>Agregar Producto
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div id="detalles-container">
+                            {{ formset.management_form }}
+                            {% for detalle_form in formset %}
+                                <div class="detalle-form border rounded p-3 mb-3" data-index="{{ forloop.counter0 }}">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <h6 class="fw-bold text-secondary mb-0">
+                                            Producto {{ forloop.counter }}
+                                        </h6>
+                                        {% if not forloop.first %}
+                                            <button type="button" class="btn btn-outline-danger btn-sm" onclick="eliminarDetalle(this)">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        {% endif %}
+                                    </div>
+
+                                    <!-- Hidden fields -->
+                                    {% for hidden in detalle_form.hidden_fields %}
+                                        {{ hidden }}
+                                    {% endfor %}
+
+                                    <div class="row g-3">
+                                        <!-- Búsqueda de producto -->
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-semibold">
+                                                <i class="bi bi-search me-1"></i>Buscar Producto
+                                            </label>
+                                            <div class="input-group">
+                                                <input type="text" 
+                                                       class="form-control buscar-producto" 
+                                                       placeholder="Escribe para buscar..."
+                                                       autocomplete="off">
+                                                <button type="button" class="btn btn-outline-secondary" onclick="mostrarCatalogoProductos(this)">
+                                                    <i class="bi bi-grid"></i>
+                                                </button>
+                                            </div>
+                                            <div class="resultados-busqueda position-absolute bg-white border rounded shadow-sm" style="z-index: 1000; display: none;"></div>
+                                        </div>
+
+                                        <!-- Producto seleccionado -->
+                                        <div class="col-md-6">
+                                            <label for="{{ detalle_form.producto.id_for_label }}" class="form-label fw-semibold">
+                                                Producto Seleccionado
+                                            </label>
+                                            {{ detalle_form.producto }}
+                                        </div>
+
+                                        <!-- Descripción personalizada -->
+                                        <div class="col-12">
+                                            <label for="{{ detalle_form.descripcion_personalizada.id_for_label }}" class="form-label fw-semibold">
+                                                Descripción Personalizada
+                                            </label>
+                                            {{ detalle_form.descripcion_personalizada }}
+                                        </div>
+
+                                        <!-- Especificaciones técnicas -->
+                                        <div class="col-md-4">
+                                            <label for="{{ detalle_form.tipo_papel.id_for_label }}" class="form-label fw-semibold">
+                                                Tipo de Papel
+                                            </label>
+                                            {{ detalle_form.tipo_papel }}
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <label for="{{ detalle_form.gramaje.id_for_label }}" class="form-label fw-semibold">
+                                                Gramaje
+                                            </label>
+                                            {{ detalle_form.gramaje }}
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <label for="{{ detalle_form.tamaño_personalizado.id_for_label }}" class="form-label fw-semibold">
+                                                Tamaño
+                                            </label>
+                                            {{ detalle_form.tamaño_personalizado }}
+                                        </div>
+
+                                        <!-- Acabados -->
+                                        <div class="col-12">
+                                            <label for="{{ detalle_form.acabados_personalizados.id_for_label }}" class="form-label fw-semibold">
+                                                Acabados Personalizados
+                                            </label>
+                                            {{ detalle_form.acabados_personalizados }}
+                                        </div>
+
+                                        <!-- Costos y precios -->
+                                        <div class="col-md-4">
+                                            <label for="{{ detalle_form.cantidad_minima.id_for_label }}" class="form-label fw-semibold">
+                                                Cantidad Mínima
+                                            </label>
+                                            {{ detalle_form.cantidad_minima }}
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <label for="{{ detalle_form.costo_unitario.id_for_label }}" class="form-label fw-semibold">
+                                                Costo Unitario
+                                            </label>
+                                            <div class="input-group">
+                                                <span class="input-group-text">$</span>
+                                                {{ detalle_form.costo_unitario }}
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <label for="{{ detalle_form.precio_unitario.id_for_label }}" class="form-label fw-semibold">
+                                                Precio Unitario
+                                            </label>
+                                            <div class="input-group">
+                                                <span class="input-group-text">$</span>
+                                                {{ detalle_form.precio_unitario }}
+                                            </div>
+                                        </div>
+
+                                        <!-- Tiempo de producción -->
+                                        <div class="col-md-6">
+                                            <label for="{{ detalle_form.tiempo_produccion.id_for_label }}" class="form-label fw-semibold">
+                                                Tiempo de Producción
+                                            </label>
+                                            {{ detalle_form.tiempo_produccion }}
+                                        </div>
+
+                                        <!-- Tabla de precios dinâmica -->
+                                        <div class="col-12">
+                                            <div class="tabla-precios-container" style="display: none;">
+                                                <h6 class="fw-bold text-info mb-3">
+                                                    <i class="bi bi-table me-2"></i>Tabla de Precios por Cantidad
+                                                </h6>
+                                                <div class="table-responsive">
+                                                    <table class="table table-sm table-striped">
+                                                        <thead class="table-dark">
+                                                            <tr>
+                                                                <th>Cantidad</th>
+                                                                <th>Precio Unit.</th>
+                                                                <th>Descuento</th>
+                                                                <th>Total</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody class="tabla-precios-body">
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <!-- Configuración financiera -->
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-calculator me-2"></i>Configuración Financiera
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Margen de utilidad -->
+                        <div class="mb-3">
+                            <label for="{{ form.margen_utilidad.id_for_label }}" class="form-label fw-semibold">
+                                Margen de Utilidad (%)
+                            </label>
+                            <div class="input-group">
+                                {{ form.margen_utilidad }}
+                                <span class="input-group-text">%</span>
+                            </div>
+                        </div>
+
+                        <!-- Descuento -->
+                        <div class="mb-3">
+                            <label for="{{ form.descuento_porcentaje.id_for_label }}" class="form-label fw-semibold">
+                                Descuento (%)
+                            </label>
+                            <div class="input-group">
+                                {{ form.descuento_porcentaje }}
+                                <span class="input-group-text">%</span>
+                            </div>
+                        </div>
+
+                        <!-- IVA -->
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                {{ form.incluir_iva }}
+                                <label class="form-check-label" for="{{ form.incluir_iva.id_for_label }}">
+                                    Incluir IVA
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.iva_porcentaje.id_for_label }}" class="form-label fw-semibold">
+                                IVA (%)
+                            </label>
+                            <div class="input-group">
+                                {{ form.iva_porcentaje }}
+                                <span class="input-group-text">%</span>
+                            </div>
+                        </div>
+
+                        <!-- Resumen de totales -->
+                        <div class="border-top pt-3">
+                            <h6 class="fw-bold text-secondary mb-3">Resumen de Totales</h6>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Subtotal:</span>
+                                <span id="subtotal-display">$0</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Descuento:</span>
+                                <span id="descuento-display">$0</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>IVA:</span>
+                                <span id="iva-display">$0</span>
+                            </div>
+                            <div class="d-flex justify-content-between fw-bold h5 border-top pt-2">
+                                <span>Total:</span>
+                                <span id="total-display" class="text-success">$0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Términos y condiciones -->
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="mb-0">
+                            <i class="bi bi-file-text me-2"></i>Términos y Condiciones
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="{{ form.tiempo_entrega.id_for_label }}" class="form-label fw-semibold">
+                                Tiempo de Entrega
+                            </label>
+                            {{ form.tiempo_entrega }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.forma_pago.id_for_label }}" class="form-label fw-semibold">
+                                Forma de Pago
+                            </label>
+                            {{ form.forma_pago }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.validez_cotizacion.id_for_label }}" class="form-label fw-semibold">
+                                Validez de la Cotización
+                            </label>
+                            {{ form.validez_cotizacion }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.observaciones.id_for_label }}" class="form-label fw-semibold">
+                                Observaciones
+                            </label>
+                            {{ form.observaciones }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botones de acción -->
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success btn-lg" name="accion" value="guardar">
+                                <i class="bi bi-check-circle me-2"></i>
+                                {% if object %}Actualizar Cotización{% else %}Crear Cotización{% endif %}
+                            </button>
+                            
+                            <button type="submit" class="btn btn-info" name="accion" value="guardar_y_enviar">
+                                <i class="bi bi-send me-2"></i>Guardar y Enviar
+                            </button>
+                            
+                            {% if object %}
+                                <a href="{% url 'cotizaciones:cotizacion_detail' object.pk %}" 
+                                   class="btn btn-outline-primary">
+                                    <i class="bi bi-eye me-2"></i>Ver Cotización
+                                </a>
+                            {% endif %}
+                            
+                            <a href="{% url 'cotizaciones:cotizacion_list' %}" 
+                               class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle me-2"></i>Cancelar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Modal para catálogo de productos -->
+<div class="modal fade" id="catalogoModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Catálogo de Productos</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row" id="productos-catalogo">
+                    <!-- Productos se cargan aquí via AJAX -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'js/cotizaciones/formulario.js' %}"></script>
 {% endblock %}

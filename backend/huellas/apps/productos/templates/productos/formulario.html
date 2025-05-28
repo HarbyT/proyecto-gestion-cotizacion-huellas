@@ -1,14 +1,384 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}{{ view.object|default:"Crear Producto" }}{% endblock %}
+{% block title %}
+    {% if object %}
+        Editar {{ object.nombre }} - Huellas Litográficas
+    {% else %}
+        Crear Nuevo Producto - Huellas Litográficas
+    {% endif %}
+{% endblock %}
 
 {% block content %}
-<h1 class="mb-4">{{ view.object|default:"Crear Producto" }}</h1>
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex align-items-center gap-3">
+                <a href="{% url 'productos:producto_list' %}" 
+                   class="btn btn-outline-secondary d-flex align-items-center gap-2">
+                    <i class="bi bi-arrow-left"></i>
+                    <span class="d-none d-sm-inline">Volver</span>
+                </a>
+                <div>
+                    <h1 class="h2 fw-bold text-primary mb-0">
+                        {% if object %}
+                            <i class="bi bi-pencil me-2"></i>Editar Producto
+                        {% else %}
+                            <i class="bi bi-plus-circle me-2"></i>Crear Nuevo Producto
+                        {% endif %}
+                    </h1>
+                    <p class="text-muted mb-0">
+                        {% if object %}
+                            Modifica la información del producto "{{ object.nombre }}"
+                        {% else %}
+                            Completa la información para crear un nuevo producto
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-success">Guardar</button>
-    <a href="{% url 'producto_list' %}" class="btn btn-secondary">Cancelar</a>
-</form>
+    <!-- Formulario -->
+    <form method="post" enctype="multipart/form-data" id="productoForm">
+        {% csrf_token %}
+        
+        <div class="row">
+            <!-- Información Básica -->
+            <div class="col-lg-8">
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-info-circle me-2"></i>Información Básica
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <!-- Nombre -->
+                            <div class="col-12">
+                                <label for="{{ form.nombre.id_for_label }}" class="form-label fw-semibold">
+                                    <i class="bi bi-tag me-1"></i>Nombre del Producto *
+                                </label>
+                                {{ form.nombre }}
+                                {% if form.nombre.errors %}
+                                    <div class="text-danger small mt-1">{{ form.nombre.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Categoría y Subcategoría -->
+                            <div class="col-md-6">
+                                <label for="{{ form.categoria.id_for_label }}" class="form-label fw-semibold">
+                                    <i class="bi bi-collection me-1"></i>Categoría *
+                                </label>
+                                {{ form.categoria }}
+                                {% if form.categoria.errors %}
+                                    <div class="text-danger small mt-1">{{ form.categoria.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="{{ form.subcategoria.id_for_label }}" class="form-label fw-semibold">
+                                    <i class="bi bi-diagram-3 me-1"></i>Subcategoría
+                                </label>
+                                {{ form.subcategoria }}
+                                {% if form.subcategoria.errors %}
+                                    <div class="text-danger small mt-1">{{ form.subcategoria.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Descripción -->
+                            <div class="col-12">
+                                <label for="{{ form.descripcion.id_for_label }}" class="form-label fw-semibold">
+                                    <i class="bi bi-text-paragraph me-1"></i>Descripción
+                                </label>
+                                {{ form.descripcion }}
+                                {% if form.descripcion.errors %}
+                                    <div class="text-danger small mt-1">{{ form.descripcion.errors.0 }}</div>
+                                {% endif %}
+                                <small class="text-muted">Describe las características y beneficios del producto</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Especificaciones Técnicas -->
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-gear me-2"></i>Especificaciones Técnicas
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <!-- Tipo de Papel y Gramaje -->
+                            <div class="col-md-6">
+                                <label for="{{ form.tipo_papel.id_for_label }}" class="form-label fw-semibold">
+                                    <i class="bi bi-file-earmark me-1"></i>Tipo de Papel
+                                </label>
+                                {{ form.tipo_papel }}
+                                {% if form.tipo_papel.errors %}
+                                    <div class="text-danger small mt-1">{{ form.tipo_papel.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="{{ form.gramaje.id_for_label }}" class="form-label fw-semibold">
+                                    <i class="bi bi-weight me-1"></i>Gramaje (gramos)
+                                </label>
+                                {{ form.gramaje }}
+                                {% if form.gramaje.errors %}
+                                    <div class="text-danger small mt-1">{{ form.gramaje.errors.0 }}</div>
+                                {% endif %}
+                                <small class="text-muted">Ej: 90, 120, 150</small>
+                            </div>
+
+                            <!-- Tamaño y Páginas -->
+                            <div class="col-md-6">
+                                <label for="{{ form.tamaño.id_for_label }}" class="form-label fw-semibold">
+                                    <i class="bi bi-aspect-ratio me-1"></i>Tamaño
+                                </label>
+                                {{ form.tamaño }}
+                                {% if form.tamaño.errors %}
+                                    <div class="text-danger small mt-1">{{ form.tamaño.errors.0 }}</div>
+                                {% endif %}
+                                <small class="text-muted">Ej: A4, Carta, 10x15cm</small>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="{{ form.numero_paginas.id_for_label }}" class="form-label fw-semibold">
+                                    <i class="bi bi-file-text me-1"></i>Número de Páginas
+                                </label>
+                                {{ form.numero_paginas }}
+                                {% if form.numero_paginas.errors %}
+                                    <div class="text-danger small mt-1">{{ form.numero_paginas.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Encuadernación -->
+                            <div class="col-md-6">
+                                <label for="{{ form.tipo_encuadernacion.id_for_label }}" class="form-label fw-semibold">
+                                    <i class="bi bi-book me-1"></i>Tipo de Encuadernación
+                                </label>
+                                {{ form.tipo_encuadernacion }}
+                                {% if form.tipo_encuadernacion.errors %}
+                                    <div class="text-danger small mt-1">{{ form.tipo_encuadernacion.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Acabados Especiales -->
+                            <div class="col-12">
+                                <label for="{{ form.acabados_especiales.id_for_label }}" class="form-label fw-semibold">
+                                    <i class="bi bi-stars me-1"></i>Acabados Especiales
+                                </label>
+                                {{ form.acabados_especiales }}
+                                {% if form.acabados_especiales.errors %}
+                                    <div class="text-danger small mt-1">{{ form.acabados_especiales.errors.0 }}</div>
+                                {% endif %}
+                                <small class="text-muted">Describe acabados como barniz UV, laminado, troquelado, etc.</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <!-- Imágenes y Archivos -->
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="mb-0">
+                            <i class="bi bi-images me-2"></i>Imágenes y Archivos
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Imagen Principal -->
+                        <div class="mb-3">
+                            <label for="{{ form.imagen_principal.id_for_label }}" class="form-label fw-semibold">
+                                <i class="bi bi-image me-1"></i>Imagen Principal
+                            </label>
+                            {{ form.imagen_principal }}
+                            {% if form.imagen_principal.errors %}
+                                <div class="text-danger small mt-1">{{ form.imagen_principal.errors.0 }}</div>
+                            {% endif %}
+                            {% if object and object.imagen_principal %}
+                                <div class="mt-2">
+                                    <img src="{{ object.imagen_principal.url }}" 
+                                         class="img-fluid rounded" 
+                                         style="max-height: 150px;">
+                                    <small class="text-muted d-block">Imagen actual</small>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Imágenes Adicionales -->
+                        <div class="mb-3">
+                            <label for="{{ form.imagenes_adicionales.id_for_label }}" class="form-label fw-semibold">
+                                <i class="bi bi-collection me-1"></i>Imágenes Adicionales
+                            </label>
+                            {{ form.imagenes_adicionales }}
+                            {% if form.imagenes_adicionales.errors %}
+                                <div class="text-danger small mt-1">{{ form.imagenes_adicionales.errors.0 }}</div>
+                            {% endif %}
+                            <small class="text-muted">URLs separadas por comas</small>
+                        </div>
+
+                        <!-- Plantilla -->
+                        <div class="mb-3">
+                            <label for="{{ form.plantilla_ejemplo.id_for_label }}" class="form-label fw-semibold">
+                                <i class="bi bi-file-earmark-pdf me-1"></i>Plantilla de Ejemplo
+                            </label>
+                            {{ form.plantilla_ejemplo }}
+                            {% if form.plantilla_ejemplo.errors %}
+                                <div class="text-danger small mt-1">{{ form.plantilla_ejemplo.errors.0 }}</div>
+                            {% endif %}
+                            {% if object and object.plantilla_ejemplo %}
+                                <div class="mt-2">
+                                    <a href="{{ object.plantilla_ejemplo.url }}" 
+                                       class="btn btn-outline-primary btn-sm" 
+                                       target="_blank">
+                                        <i class="bi bi-download me-1"></i>Ver Actual
+                                    </a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Información Comercial -->
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-currency-dollar me-2"></i>Información Comercial
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Precio Base -->
+                        <div class="mb-3">
+                            <label for="{{ form.precio_base.id_for_label }}" class="form-label fw-semibold">
+                                <i class="bi bi-tag me-1"></i>Precio Base
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                {{ form.precio_base }}
+                            </div>
+                            {% if form.precio_base.errors %}
+                                <div class="text-danger small mt-1">{{ form.precio_base.errors.0 }}</div>
+                            {% endif %}
+                            <small class="text-muted">Precio de referencia para cotizaciones</small>
+                        </div>
+
+                        <!-- Estado -->
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                {{ form.activo }}
+                                <label class="form-check-label fw-semibold" for="{{ form.activo.id_for_label }}">
+                                    <i class="bi bi-toggle-on me-1"></i>Producto Activo
+                                </label>
+                            </div>
+                            {% if form.activo.errors %}
+                                <div class="text-danger small mt-1">{{ form.activo.errors.0 }}</div>
+                            {% endif %}
+                            <small class="text-muted">Los productos inactivos no aparecen en el catálogo público</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botones de Acción -->
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success btn-lg d-flex align-items-center justify-content-center gap-2">
+                                <i class="bi bi-check-circle"></i>
+                                {% if object %}Actualizar Producto{% else %}Crear Producto{% endif %}
+                            </button>
+                            
+                            {% if object %}
+                                <a href="{% url 'productos:producto_detail' object.id %}" 
+                                   class="btn btn-outline-primary d-flex align-items-center justify-content-center gap-2">
+                                    <i class="bi bi-eye"></i>Ver Producto
+                                </a>
+                            {% endif %}
+                            
+                            <a href="{% url 'productos:producto_list' %}" 
+                               class="btn btn-outline-secondary d-flex align-items-center justify-content-center gap-2">
+                                <i class="bi bi-x-circle"></i>Cancelar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+// Validación del formulario
+document.getElementById('productoForm').addEventListener('submit', function(e) {
+    let isValid = true;
+    const requiredFields = ['id_nombre', 'id_categoria'];
+    
+    requiredFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field && !field.value.trim()) {
+            isValid = false;
+            field.classList.add('is-invalid');
+        } else if (field) {
+            field.classList.remove('is-invalid');
+        }
+    });
+    
+    if (!isValid) {
+        e.preventDefault();
+        alert('Por favor completa todos los campos requeridos.');
+    }
+});
+
+// Preview de imagen
+document.getElementById('id_imagen_principal').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            // Crear preview si no existe
+            let preview = document.getElementById('imagen-preview');
+            if (!preview) {
+                preview = document.createElement('div');
+                preview.id = 'imagen-preview';
+                preview.innerHTML = '<img class="img-fluid rounded mt-2" style="max-height: 150px;"><small class="text-muted d-block">Vista previa</small>';
+                e.target.parentNode.appendChild(preview);
+            }
+            preview.querySelector('img').src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+});
+</script>
+
+<style>
+.form-control:focus,
+.form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.card-header {
+    border-bottom: 2px solid rgba(255,255,255,0.2);
+}
+
+.form-label {
+    color: #495057;
+}
+
+.input-group-text {
+    background-color: #f8f9fa;
+    border-color: #ced4da;
+}
+
+@media (max-width: 768px) {
+    .col-lg-4 .card {
+        margin-bottom: 1rem;
+    }
+}
+</style>
 {% endblock %}

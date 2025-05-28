@@ -1,14 +1,234 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Confirmar Eliminación{% endblock %}
+{% block title %}Eliminar Producto - {{ producto.nombre }}{% endblock %}
 
 {% block content %}
-<h1 class="mb-4">Eliminar Producto</h1>
-<p>¿Estás seguro de que deseas eliminar el producto <strong>{{ producto.nombre }}</strong>?</p>
+<div class="container-fluid py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'productos:producto_list' %}">Productos</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'productos:producto_detail' producto.id %}">{{ producto.nombre }}</a></li>
+            <li class="breadcrumb-item active">Eliminar</li>
+        </ol>
+    </nav>
 
-<form method="post">
-    {% csrf_token %}
-    <button type="submit" class="btn btn-danger">Eliminar</button>
-    <a href="{% url 'producto_list' %}" class="btn btn-secondary">Cancelar</a>
-</form>
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-xl-6">
+            <!-- Card de Confirmación -->
+            <div class="card shadow border-0">
+                <!-- Header con icono de advertencia -->
+                <div class="card-header bg-danger text-white text-center py-4">
+                    <i class="bi bi-exclamation-triangle-fill" style="font-size: 3rem;"></i>
+                    <h3 class="mt-3 mb-0 fw-bold">Confirmar Eliminación</h3>
+                </div>
+
+                <div class="card-body p-4">
+                    <!-- Información del producto -->
+                    <div class="text-center mb-4">
+                        {% if producto.imagen_principal %}
+                            <img src="{{ producto.imagen_principal.url }}" 
+                                 class="rounded shadow-sm mb-3" 
+                                 style="max-height: 120px; max-width: 120px; object-fit: cover;">
+                        {% else %}
+                            <div class="bg-light rounded d-inline-flex align-items-center justify-content-center mb-3" 
+                                 style="width: 120px; height: 120px;">
+                                <i class="bi bi-image text-muted" style="font-size: 2rem;"></i>
+                            </div>
+                        {% endif %}
+                        
+                        <h4 class="text-danger fw-bold mb-2">{{ producto.nombre }}</h4>
+                        <p class="text-muted mb-1">
+                            <i class="bi bi-collection me-1"></i>{{ producto.categoria.nombre }}
+                        </p>
+                        {% if producto.precio_base %}
+                            <p class="text-muted">
+                                <i class="bi bi-currency-dollar me-1"></i>Precio: ${{ producto.precio_base|floatformat:0 }}
+                            </p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Mensaje de advertencia -->
+                    <div class="alert alert-warning border-0 shadow-sm mb-4">
+                        <div class="d-flex align-items-start">
+                            <i class="bi bi-exclamation-triangle text-warning me-3 mt-1" style="font-size: 1.5rem;"></i>
+                            <div>
+                                <h6 class="alert-heading fw-bold mb-2">¿Estás seguro de eliminar este producto?</h6>
+                                <p class="mb-2">Esta acción <strong>no se puede deshacer</strong>. Al eliminar el producto:</p>
+                                <ul class="mb-0 small">
+                                    <li>Se perderá toda la información del producto</li>
+                                    <li>Las cotizaciones existentes mantendrán la referencia</li>
+                                    <li>No aparecerá más en el catálogo</li>
+                                    <li>Se eliminarán las imágenes y archivos asociados</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Información adicional del producto -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-sm-6">
+                            <div class="bg-light p-3 rounded">
+                                <small class="text-muted d-block">Fecha de Creación</small>
+                                <strong>{{ producto.fecha_creacion|date:"d/m/Y H:i" }}</strong>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="bg-light p-3 rounded">
+                                <small class="text-muted d-block">Estado</small>
+                                <strong>
+                                    {% if producto.activo %}
+                                        <span class="text-success">Activo</span>
+                                    {% else %}
+                                        <span class="text-secondary">Inactivo</span>
+                                    {% endif %}
+                                </strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Campo de confirmación -->
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">
+                            Para confirmar, escribe el nombre del producto:
+                        </label>
+                        <input type="text" 
+                               id="confirmacion" 
+                               class="form-control" 
+                               placeholder="Escribe: {{ producto.nombre }}"
+                               autocomplete="off">
+                        <small class="text-muted">Esto ayuda a prevenir eliminaciones accidentales</small>
+                    </div>
+
+                    <!-- Formulario de eliminación -->
+                    <form method="post" id="deleteForm">
+                        {% csrf_token %}
+                        
+                        <!-- Botones de acción -->
+                        <div class="d-flex gap-3 justify-content-center">
+                            <button type="submit" 
+                                    id="deleteBtn"
+                                    class="btn btn-danger btn-lg px-4 d-flex align-items-center gap-2"
+                                    disabled>
+                                <i class="bi bi-trash"></i>
+                                Eliminar Producto
+                            </button>
+                            
+                            <a href="{% url 'productos:producto_detail' producto.id %}" 
+                               class="btn btn-outline-secondary btn-lg px-4 d-flex align-items-center gap-2">
+                                <i class="bi bi-arrow-left"></i>
+                                Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Footer con enlaces adicionales -->
+                <div class="card-footer bg-light text-center">
+                    <small class="text-muted">
+                        ¿Prefieres mantener el producto? 
+                        <a href="{% url 'productos:producto_update' producto.id %}" class="text-decoration-none">
+                            Edítalo aquí
+                        </a> o 
+                        <a href="{% url 'productos:producto_list' %}" class="text-decoration-none">
+                            vuelve al catálogo
+                        </a>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Validación de confirmación de nombre
+const confirmInput = document.getElementById('confirmacion');
+const deleteBtn = document.getElementById('deleteBtn');
+const deleteForm = document.getElementById('deleteForm');
+const nombreProducto = "{{ producto.nombre }}";
+
+confirmInput.addEventListener('input', function() {
+    if (this.value === nombreProducto) {
+        deleteBtn.disabled = false;
+        deleteBtn.classList.remove('btn-secondary');
+        deleteBtn.classList.add('btn-danger');
+        this.classList.remove('is-invalid');
+        this.classList.add('is-valid');
+    } else {
+        deleteBtn.disabled = true;
+        deleteBtn.classList.remove('btn-danger');
+        deleteBtn.classList.add('btn-secondary');
+        this.classList.remove('is-valid');
+        if (this.value.length > 0) {
+            this.classList.add('is-invalid');
+        }
+    }
+});
+
+// Confirmación final antes de enviar
+deleteForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    if (confirmInput.value !== nombreProducto) {
+        alert('Debes escribir el nombre exacto del producto para confirmar la eliminación.');
+        confirmInput.focus();
+        return;
+    }
+    
+    // Mostrar loading en el botón
+    deleteBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Eliminando...';
+    deleteBtn.disabled = true;
+    
+    // Enviar formulario después de un pequeño delay
+    setTimeout(() => {
+        this.submit();
+    }, 500);
+});
+
+// Enfoque automático al campo de confirmación
+confirmInput.focus();
+</script>
+
+<style>
+.card {
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.card-header {
+    border-bottom: none;
+}
+
+.btn-lg {
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+}
+
+.alert {
+    border-radius: 8px;
+}
+
+@media (max-width: 768px) {
+    .d-flex.gap-3 {
+        flex-direction: column;
+    }
+    
+    .btn-lg {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* Animación para el input de confirmación */
+#confirmacion.is-valid {
+    animation: validPulse 0.3s ease-in-out;
+}
+
+@keyframes validPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+}
+</style>
 {% endblock %}

@@ -1,0 +1,56 @@
+<!-- filepath: c:\pasantiaHuellas\proyecto-gestion-cotizacion-huellas\backend\huellas\apps\cuentas\templates\cuentas\perfil.html -->
+{% extends "base.html" %}
+
+{% block title %}Mi Perfil{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Mi Perfil</h2>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    {% if perfil.avatar %}
+                        <img src="{{ perfil.avatar.url }}" class="rounded-circle mb-3" width="150">
+                    {% else %}
+                        <div class="bg-secondary rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 150px; height: 150px;">
+                            <i class="fas fa-user fa-4x text-white"></i>
+                        </div>
+                    {% endif %}
+                    <h5>{{ perfil.nombre_completo|default:user.username }}</h5>
+                    <p class="text-muted">{{ perfil.cargo|default:"Sin cargo asignado" }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between">
+                    <h5>Información Personal</h5>
+                    <div>
+                        <a href="{% url 'cuentas:perfil_editar' %}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-edit"></i> Editar Perfil
+                        </a>
+                        <a href="{% url 'cuentas:usuario_editar' %}" class="btn btn-secondary btn-sm">
+                            <i class="fas fa-user-edit"></i> Editar Usuario
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        <li class="list-group-item"><strong>Usuario:</strong> {{ perfil.user.username }}</li>
+                        <li class="list-group-item"><strong>Email:</strong> {{ perfil.user.email }}</li>
+                        <li class="list-group-item"><strong>Teléfono:</strong> {{ perfil.telefono }}</li>
+                        {% if perfil.foto %}
+                            <li class="list-group-item">
+                                <strong>Foto:</strong><br>
+                                <img src="{{ perfil.foto.url }}" alt="Foto de perfil" width="150">
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
